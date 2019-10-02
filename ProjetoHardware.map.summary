@@ -1,0 +1,15 @@
+Analysis & Synthesis Status : Successful - Wed Oct 02 08:32:54 2019
+Quartus II 64-Bit Version : 9.1 Build 350 03/24/2010 SP 2 SJ Full Version
+Revision Name : ProjetoHardware
+Top-level Entity Name : SrcAddressMem
+Family : Stratix II
+Logic utilization : N/A
+    Combinational ALUTs : 97
+    Dedicated logic registers : 0
+Total registers : 0
+Total pins : 195
+Total virtual pins : 0
+Total block memory bits : 0
+DSP block 9-bit elements : 0
+Total PLLs : 0
+Total DLLs : 0
