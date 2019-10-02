@@ -1,30 +1,30 @@
-.asm.rpt
+*.asm.rpt
 
-.done
+*.done
 
-.fit.rpt
+*.fit.rpt
 
-.fit.smsg
+*.fit.smsg
 
-.fit.summary
+*.fit.summary
 
-.flow.rpt
+*.flow.rpt
 
-.map.rpt
+*.map.rpt
 
-.map.summary
+*.map.summary
 
-.pin
+*.pin
 
-.pof
+*.pof
 
-.qsf
+*.qsf
 
-.sim.rpt
+*.sim.rpt
 
-.sof
+*.sof
 
-.tan.rpt
+*.tan.rpt
 
-.tan.summary
+*.tan.summary
 
