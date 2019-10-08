@@ -8,11 +8,9 @@
 
 *.fit.summary
 
-*.flow.rpt
+*.rpt
 
-*.map.rpt
-
-*.map.summary
+*.summary
 
 *.pin
 
@@ -20,7 +18,7 @@
 
 *.qsf
 
-*.sim.rpt
+*.rpt
 
 *.sof
 
@@ -28,4 +26,4 @@
 
 *.tan.summary
 
-*.v.bak
+*.bak
