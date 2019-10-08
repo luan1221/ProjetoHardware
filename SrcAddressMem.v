@@ -1,26 +1,23 @@
-module SrcAddressMem(srcAddMem, in_pc, in_aluOut, 
-						in_causeNoOp, in_causeOvfl, 
-                        in_causeDiv0, out);
+module SrcAddressMem(srcAddMem, in_pc, in_aluOut, out);
 
+	parameter NoOp = 32'd253;
+	parameter Overfl = 32'd254;
+	parameter Div0 = 32'd255;
+	
 	input [2:0] srcAddMem;
 	input [31:0] in_pc;
 	input [31:0] in_aluOut;
-	input [31:0] in_causeNoOp;
-	input [31:0] in_causeOvfl;
-	input [31:0] in_causeDiv0;
 	
 	output reg [31:0] out;
 	
-	always @ (in_pc or in_aluOut or in_causeNoOp 
-               or in_causeOvfl or in_causeDiv0 
-               or srcAddMem) 
+	always @ (in_pc or in_aluOut or srcAddMem) 
     begin
         case (srcAddMem)
             3'b000 : out <= in_pc;
             3'b001 : out <= in_aluOut;
-            3'b010 : out <= in_causeNoOp;
-            3'b011 : out <= in_causeOvfl;
-            3'b100 : out <= in_causeDiv0;
+            3'b010 : out <= NoOp;
+            3'b011 : out <= Overfl;
+            3'b100 : out <= Div0;
         endcase
     end
 endmodule

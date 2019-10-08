@@ -1,14 +1,14 @@
-module SrcHi(SrcHi, HiMult, HiDiv, out);
+module SrcHi(SrcHiLo, HiMult, HiDiv, out);
 	
-	input SrcHi;
-	input [31:0] LoMult;
-	input [31:0] LoDiv;
+	input SrcHiLo;
+	input [31:0] HiMult;
+	input [31:0] HiDiv;
 	
 	output reg [31:0] out;
 	
-	always @ (HiMult or HiDiv or SrcHi)
+	always @ (HiMult or HiDiv or SrcHiLo)
 	begin
-		case (SrcHi)
+		case (SrcHiLo)
 			1'b0 : out <= HiMult;
 			1'b1 : out <= HiDiv;
 		endcase

@@ -11,5 +11,6 @@ module SrcLo(ScrHiLo, LoMult, LoDiv, out);
 		case (ScrHiLo)
 			1'b0 : out <= LoMult;
 			1'b1 : out <= LoDiv;
+		endcase
 	end
 endmodule
