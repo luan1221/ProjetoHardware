@@ -18,6 +18,10 @@
 
 *.qsf
 
+*.qpf
+
+*.qws
+
 *.rpt
 
 *.sof
@@ -27,3 +31,7 @@
 *.tan.summary
 
 *.bak
+
+db/
+
+incremental_db/

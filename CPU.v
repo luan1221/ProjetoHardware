@@ -21,7 +21,7 @@ module CPU(input clk, input reset);
 	
 	wire [31:0] Compilar = 32'd0; /* Resolver isso depois (inserido para completar os mux) */
 	wire [31:0] PCin;
-	wire [31:0] PCout;
+	wire [31:0] PCOut;
 	
 	// Fios da Memória
 	
@@ -36,7 +36,7 @@ module CPU(input clk, input reset);
 	wire [4:0] rs;
 	wire [25:0] endJump = {rs, rt, inst15_0}; 
 	wire [27:0] ShiftJump = endJump << 2; // testar se funfa
-	wire [31:0] jump = {PCout[31:28], ShiftJump};
+	wire [31:0] jump = {PCOut[31:28], ShiftJump};
 	
 	
 	// Unidade de Controle
@@ -73,7 +73,7 @@ module CPU(input clk, input reset);
 	
 	// Registradores
 	
-	Registrador PC(clk, reset, PCLoad, PCin, PCout);
+	Registrador PC(clk, reset, PCLoad, PCin, PCOut);
 	Registrador A(clk, reset, WriteA, ReadDataA, OutA);
 	Registrador B(clk, reset, WriteB, ReadDataB, OutB);
 	Registrador ALUOut(clk, reset, WriteALUOut, ALUResult, ALUOutSaida);
@@ -86,14 +86,14 @@ module CPU(input clk, input reset);
 	Memoria Memory(Address, clk, MemOp, Compilar, MemOut); // *
 	
 	
-	// Multiplexadores
+	// Multiplexadores (CHECAR SE PRECISAM DE NOME - Critical Warning)
 	
-	 SrcAddressMem (SrcAddressMem, PCOut, ALUOutSaida, Address);
-	 RegDst (RegDst, rt, rd, rs, WriteReg);
-	 ALUSrcA (ALUSrcA, PCout, OutA, OutB, Compilar, OutSrcA); // *
-	 ALUSrcB (ALUSrcB, OutB, signBranch, branch, Compilar, Compilar, OutSrcB); // *
-	 PCSource (PCSource, ALUResult, ALUOutSaida, jump, Compilar, PCin); // *
-	 MemToReg (MemToReg, ALUOutSaida, Compilar, Compilar, Compilar, Compilar, Compilar, LT32, Compilar, WriteData); // *
+	 MuxSrcAddressMem (SrcAddressMem, PCOut, ALUOutSaida, Address);
+	 MuxRegDst (RegDst, rt, rd, rs, WriteReg);
+	 MuxALUSrcA (ALUSrcA, PCOut, OutA, OutB, Compilar, OutSrcA); // *
+	 MuxALUSrcB (ALUSrcB, OutB, signBranch, branch, Compilar, Compilar, OutSrcB); // *
+	 MuxPCSource (PCSource, ALUResult, ALUOutSaida, jump, Compilar, PCin); // *
+	 MuxMemToReg (MemToReg, ALUOutSaida, Compilar, Compilar, Compilar, Compilar, Compilar, LT32, Compilar, WriteData); // *
 	 
 
 endmodule
