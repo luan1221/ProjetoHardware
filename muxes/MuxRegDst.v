@@ -12,15 +12,9 @@ module MuxRegDst(RegDst,
 	input [4:0] in_rd;
 	input [4:0] in_rs;
 	
-	output reg [4:0] out;
+	output [4:0] out;
 	
-	always @* begin
-        case (RegDst)
-            3'b000 : out <= in_rt;
-            3'b001 : out <= in_rd;
-            3'b010 : out <= RegRA;
-            3'b011 : out <= RegSP;
-            3'b100 : out <= in_rs;
-        endcase
-    end
+	assign out = RegDst[2] ? (RegDst[1] ? (RegDst[0] ? 32'd0 : 32'd0) : (RegDst[0] ? 32'd0 : RegSP))
+					: (RegDst[1] ? (RegDst[0] ? RegRA : in_rs) : (RegDst[0] ? in_rd : in_rt));
+
 endmodule

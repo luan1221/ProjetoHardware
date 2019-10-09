@@ -6,14 +6,8 @@ module MuxPCSource(PCSource, in_aluResult, in_aluOut, in_jumpAddress, in_EPC, ou
 	input [31:0] in_jumpAddress;
 	input [31:0] in_EPC;
 	
-	output reg [31:0] out;
+	output [31:0] out;
 	
-	always @* begin
-        case (PCSource)
-            2'b00 : out <= in_aluResult;
-            2'b01 : out <= in_aluOut;
-            2'b10 : out <= in_jumpAddress;
-            2'b11 : out <= in_EPC;
-        endcase
-    end
+	assign out = PCSource[1] ? (PCSource[0] ? in_EPC : in_jumpAddress) : (PCSource[0] ? in_aluOut : in_aluResult);
+	
 endmodule

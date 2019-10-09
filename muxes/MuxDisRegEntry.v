@@ -9,13 +9,8 @@ module MuxDisRegEntry(DisRegE,
     input [31:0] in_a;
     input [31:0] in_bit15a00SignExtShitL2;
 
-    output reg [31:0] out;
+    output [31:0] out;
 
-    always @* begin
-        case (DisRegE)
-            2'b00 : out <= in_b;
-            2'b01 : out <= in_a;
-            2'b10 : out <= in_bit15a00SignExtShitL2; 
-        endcase
-    end
+    assign out = DisRegE[1] ? (DisRegE[0] ? 32'd0 : in_bit15a00SignExtShitL2) : (DisRegE[0] ? in_a : in_b);
+    
 endmodule

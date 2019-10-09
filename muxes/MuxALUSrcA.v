@@ -11,15 +11,8 @@ module MuxALUSrcA(ALUSrcA,
 	input [31:0] in_b;
 	input [31:0] in_memoryDataReg;
 	
+	output [31:0] out;
 	
-	output reg [31:0] out;
+	assign out = ALUSrcA[1] ? (ALUSrcA[0] ? in_memoryDataReg : in_b) : (ALUSrcA[0] ? in_a : in_pc);
 	
-	always @* begin
-        case (ALUSrcA)
-            2'b00 : out <= in_pc;
-            2'b01 : out <= in_a;
-            2'b10 : out <= in_b;
-            2'b11 : out <= in_memoryDataReg;
-        endcase
-    end
 endmodule

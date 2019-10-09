@@ -15,16 +15,9 @@ module MuxALUSrcB(ALUSrcB,
 	input [31:0] in_bit15a00UnsigExt;
 	input [31:0] in_memoryDataReg;
 	
-	output reg [31:0] out;
-	
-	always @* begin
-        case (ALUSrcB)
-            3'b000 : out <= in_b;
-            3'b001 : out <= num4;
-            3'b010 : out <= in_bit15a00SigExt;
-            3'b011 : out <= in_bit15a00SigExtShiftL2;
-            3'b100 : out <= in_bit15a00UnsigExt;
-			3'b101 : out <= in_memoryDataReg;
-        endcase
-    end
+	output [31:0] out;
+    
+    assign out = ALUSrcB[2] ? (ALUSrcB[1] ? (ALUSrcB[0] ? 32'd0 : 32'd0) : (ALUSrcB[0] ? in_memoryDataReg : in_bit15a00UnsigExt))
+					: (ALUSrcB[1] ? (ALUSrcB[0] ? in_bit15a00SigExtShiftL2 : in_bit15a00SigExt) : (ALUSrcB[0] ? num4 : in_b));
+					
 endmodule
