@@ -1,8 +1,4 @@
-module MuxRegDst(RegDst,
-			  in_rt,
-              in_rd,  
-              in_rs,
-              out);
+module MuxRegDst(RegDst, in_rt, in_rd, in_rs, out);
 						
 	parameter RegRA = 5'd31;
 	parameter RegSP = 5'd29;

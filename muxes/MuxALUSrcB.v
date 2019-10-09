@@ -1,10 +1,4 @@
-module MuxALUSrcB(ALUSrcB,
-               in_b,
-               in_bit15a00SigExt, 
-               in_bit15a00SigExtShiftL2, 
-               in_bit15a00UnsigExt,
-               in_memoryDataReg,
-               out);
+module MuxALUSrcB(ALUSrcB, in_b, in_bit15a00SigExt, in_bit15a00SigExtShiftL2, in_bit15a00UnsigExt, in_memoryDataReg, out);
                
     parameter num4 = 32'd4;           
 						

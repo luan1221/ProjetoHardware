@@ -1,9 +1,4 @@
-module MuxALUSrcA(ALUSrcA,
-                 in_pc, 
-	        	 in_a, 
-				 in_b, 
-                 in_memoryDataReg,
- 				 out);
+module MuxALUSrcA(ALUSrcA, in_pc, in_a, in_b, in_memoryDataReg, out);
 						
 	input [1:0] ALUSrcA;
 	input [31:0] in_pc;

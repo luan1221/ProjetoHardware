@@ -1,13 +1,4 @@
-module MuxMemToReg(MemToReg,
-				in_aluOut,
-				in_memoryDataReg,
-				in_hi, 
-				in_lo, 
-				in_shiftRegOut, 
-				in_loadOut,
-				in_lessThanFlag,
-				in_num227,
-				out);
+module MuxMemToReg(MemToReg, in_aluOut, in_memoryDataReg, in_hi, in_lo, in_shiftRegOut, in_loadOut, in_lessThanFlag, in_num227, out);
 						
 	input [2:0] MemToReg;
 	input [31:0] in_aluOut;

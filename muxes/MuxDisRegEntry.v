@@ -1,8 +1,4 @@
-module MuxDisRegEntry(DisRegE, 
-                    in_b,
-                    in_a,
-                    in_bit15a00SignExtShitL2,
-                    out);
+module MuxDisRegEntry(DisRegE, in_b, in_a, in_bit15a00SignExtShitL2, out);
 	
 	input [1:0] DisRegE;
     input [31:0] in_b;
