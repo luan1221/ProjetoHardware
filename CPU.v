@@ -35,8 +35,9 @@ module CPU(input clk, input reset);
 	wire [4:0] rd = inst15_0[15:11];
 	wire [4:0] rt;
 	wire [4:0] rs;
-	wire [25:0] endJump = {rs, rt, inst15_0}; 
-	wire [27:0] ShiftJump = endJump << 2; // testar se funfa
+	wire [25:0] endJump = {rs, rt, inst15_0};
+	wire [27:0] ShiftJump;
+	ShiftLeft2(endJump, ShiftJump); 
 	wire [31:0] jump = {PCOut[31:28], ShiftJump};
 	
 	// Unidade de Controle
@@ -50,13 +51,16 @@ module CPU(input clk, input reset);
 	wire [31:0] WriteData;
 	wire [31:0] ReadDataA;
 	wire [31:0] ReadDataB;
-	wire [31:0] LT32 = {31'd0, LT};
+	wire [31:0] LT32;
+	ExtendLT(LT, LT32);
 	
 	// ULA
 	wire [31:0] OutA;
 	wire [31:0] OutB;
-	wire [31:0] signBranch = {16'd0, inst15_0};
-	wire [31:0] branch = signBranch << 2; // testar se funfa
+	wire [31:0] signBranch;
+	SignExtd16a32(inst15_0, signBranch);
+	wire [31:0] branch;
+	ShiftLeft2(signBranch, branch); 
 	wire [31:0] OutSrcA;
 	wire [31:0] OutSrcB;
 	wire [31:0] ALUResult;

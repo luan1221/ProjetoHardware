@@ -39,6 +39,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 	parameter Fetch = 7'd0;
 	parameter OverflowEXC = 7'd5;
 	parameter WriteALURd = 7'd4;
+	parameter WriteAddiRd = 7'd11;
 	
 	/* LEMBRAR DE USAR DECIMAIS PARA POUPAR TEMPO */
 	always @(posedge clk or posedge reset) begin
@@ -129,7 +130,10 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 						6'd24: state <= 7'd8; //And
 						6'd22: state <= 7'd9;
 					endcase	
-				end 
+				end
+				if (OpCode == 6'd8) begin
+					state <= 7'd10;
+				end
 			end
 			
 			/* ADD */
@@ -286,6 +290,53 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 					state <= WriteALURd;
                 else
 					state <= OverflowEXC;
+			end
+			
+			/* addi */
+			
+			7'd10: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd1; //*
+                ALUSrcB <= 3'd2; //*
+                ALUOp <= 3'd1; //*
+                WriteALUOut <= 1'd1; //*
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                if (Overflow == 0)
+					state <= WriteAddiRd;
+                else
+					state <= OverflowEXC;
+			end
+			
+			/* WriteAddiRd */
+			
+			7'd11: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd1;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                state <= Fetch;
 			end
 		endcase
 		
