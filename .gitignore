@@ -4,6 +4,8 @@
 
 *.fit.rpt
 
+*.mif
+
 *.fit.smsg
 
 *.fit.summary
@@ -17,8 +19,6 @@
 *.pof
 
 *.qsf
-
-*.qpf
 
 *.qws
 
@@ -36,4 +36,4 @@ db/
 
 incremental_db/
 
-*.smsg
+*map.smsg
