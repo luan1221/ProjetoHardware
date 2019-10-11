@@ -82,7 +82,28 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				PCSource <= 2'd0;
 				PCWrite <= 1'd1;
 				MemToReg <= 3'd0;
-				state <= 7'd1; /* WritingIR */
+				state <= 7'd11; /* WritingIR */
+			end
+			
+			/* WAIT */
+			7'd11: begin
+				SrcAddressMem <= 3'd0;
+				MemOp <= 1'd0;
+				WriteMDR <= 1'd0;
+				IRWrite <= 1'd0;
+				RegDst <= 3'd0;
+				RegWrite <= 1'd0;
+				WriteA <= 1'd0;
+				WriteB <= 1'd0;
+				ALUSrcA <= 2'd0;
+				ALUSrcB <= 3'd0;
+				ALUOp <= 3'd0;
+				WriteALUOut <= 1'd0; /* CHECAR SE PRECISA ESCREVER */
+				EPCWrite <= 1'd0;
+				PCSource <= 2'd0;
+				PCWrite <= 1'd0;
+				MemToReg <= 3'd0;
+				state <= 7'd1; /* Decode */
 			end
 			
 			/* WRITING IR */
@@ -124,14 +145,14 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				PCSource <= 2'd0;
 				PCWrite <= 1'd0;
 				MemToReg <= 3'd0;
-				if (OpCode == 6'd0) begin
+				if (OpCode == 6'h0) begin
 					case (Func)  
-						6'd20: state <= 7'd3; //Add
-						6'd24: state <= 7'd8; //And
-						6'd22: state <= 7'd9;
+						6'h20: state <= 7'd3; //Add
+						6'h24: state <= 7'd8; //And
+						6'h22: state <= 7'd9;
 					endcase	
 				end
-				if (OpCode == 6'd8) begin
+				if (OpCode == 6'h8) begin
 					state <= 7'd10;
 				end
 			end
