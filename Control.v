@@ -46,19 +46,19 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 		if (reset) begin
 			SrcAddressMem <= 3'd0;
 			MemOp <= 1'd0;
-			WriteMDR <= 1'd1;
+			WriteMDR <= 1'd0;
 			IRWrite <= 1'd0;
 			RegDst <= 3'd3;
 			RegWrite <= 1'd1;
-			WriteA <= 1'd1;
-			WriteB <= 1'd1;
+			WriteA <= 1'd0;
+			WriteB <= 1'd0;
 			ALUSrcA <= 2'd0;
-			ALUSrcB <= 3'd1;
-			ALUOp <= 3'd1;
-			WriteALUOut <= 1'd1; /* CHECAR SE PRECISA ESCREVER */
+			ALUSrcB <= 3'd0;
+			ALUOp <= 3'd0;
+			WriteALUOut <= 1'd0; /* CHECAR SE PRECISA ESCREVER */
 			EPCWrite <= 1'd0;
 			PCSource <= 2'd0;
-			PCWrite <= 1'd1;
+			PCWrite <= 1'd0;
 			MemToReg <= 3'd7;
 			state <= Fetch;
 		end
@@ -82,11 +82,11 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				PCSource <= 2'd0;
 				PCWrite <= 1'd1;
 				MemToReg <= 3'd0;
-				state <= 7'd11; /* WritingIR */
+				state <= 7'd91; /* WritingIR */
 			end
 			
 			/* WAIT */
-			7'd11: begin
+			7'd91: begin
 				SrcAddressMem <= 3'd0;
 				MemOp <= 1'd0;
 				WriteMDR <= 1'd0;
@@ -145,7 +145,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				PCSource <= 2'd0;
 				PCWrite <= 1'd0;
 				MemToReg <= 3'd0;
-				if (OpCode == 6'h0) begin
+				state <= 7'd3;
+				/* if (OpCode == 6'h0) begin
 					case (Func)  
 						6'h20: state <= 7'd3; //Add
 						6'h24: state <= 7'd8; //And
@@ -154,7 +155,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				end
 				if (OpCode == 6'h8) begin
 					state <= 7'd10;
-				end
+				end */
 			end
 			
 			/* ADD */
@@ -165,9 +166,32 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 IRWrite <= 1'd0;
                 RegDst <= 3'd0;
                 RegWrite <= 1'd0;
+                WriteA <= 1'd1;
+                WriteB <= 1'd1;
+                ALUSrcA <= 2'd0; //*
+                ALUSrcB <= 3'd0; //*
+                ALUOp <= 3'd0; //*
+                WriteALUOut <= 1'd0; //*
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                state <= 7'd31;
+                /* if (Overflow == 0)
+					state <= WriteALURd;
+                else
+					state <= OverflowEXC; */
+            end
+            
+            7'd31: begin
+                SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
                 WriteA <= 1'd0;
                 WriteB <= 1'd0;
-                
                 ALUSrcA <= 2'd1; //*
                 ALUSrcB <= 3'd0; //*
                 ALUOp <= 3'd1; //*
@@ -176,11 +200,12 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
                 MemToReg <= 3'd0;
-                if (Overflow == 0)
+                state <= 7'd4;
+                /* if (Overflow == 0)
 					state <= WriteALURd;
                 else
-					state <= OverflowEXC;
-            end
+					state <= OverflowEXC; */
+			end
             
 			/* WRITE ALU Rd */            
 			7'd4: begin
