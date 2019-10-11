@@ -1,7 +1,7 @@
 module ShiftLeftBranch(in, out);
 
-input wire [25:0] in;
-output [27:0] out;
+input wire [31:0] in;
+output [31:0] out;
 
 assign out = in << 2;
 
