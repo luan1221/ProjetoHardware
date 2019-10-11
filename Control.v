@@ -14,9 +14,6 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 	input EQ;
 	input GT;
 	
-	/* REGISTRADOR AUXILIAR PARA CONTROLAR OS ESTADOS */
-	reg [6:0] state;
-	
 	/* SINAIS ENVIADOS DA UNIDADE DE CONTROLE PARA OS COMPONENTES */
 	output reg [2:0] SrcAddressMem;
 	output reg MemOp;
@@ -36,44 +33,55 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 	output reg [2:0] MemToReg;
 	
 	/* PARAMETROS MAIS UTILIZADOS */
-	parameter Fetch = 7'd0;
-	parameter OverflowEXC = 7'd5;
-	parameter WriteALURd = 7'd4;
-	parameter WriteAddiRd = 7'd11;
+	parameter Fetch = 7'd1;
+	
+	/* REGISTRADOR AUXILIAR PARA CONTROLAR OS ESTADOS */
+	reg [6:0] state;
+	reg [6:0] nextstate;
+	
+	initial begin
+		nextstate <= Fetch;
+	end
 	
 	/* LEMBRAR DE USAR DECIMAIS PARA POUPAR TEMPO */
-	always @(posedge clk or posedge reset) begin
-		if (reset) begin
-			SrcAddressMem <= 3'd0;
-			MemOp <= 1'd0;
-			WriteMDR <= 1'd0;
-			IRWrite <= 1'd0;
-			RegDst <= 3'd3;
-			RegWrite <= 1'd1;
-			WriteA <= 1'd0;
-			WriteB <= 1'd0;
-			ALUSrcA <= 2'd0;
-			ALUSrcB <= 3'd0;
-			ALUOp <= 3'd0;
-			WriteALUOut <= 1'd0; /* CHECAR SE PRECISA ESCREVER */
-			EPCWrite <= 1'd0;
-			PCSource <= 2'd0;
-			PCWrite <= 1'd0;
-			MemToReg <= 3'd7;
-			state <= Fetch;
-		end
-		
+always @(posedge clk or posedge reset) begin
+		if (reset) 
+			state <= 7'd0;
+		else
+			state <= nextstate;
+end
+
+always @(*) begin
 		case (state)
-			/* FETCH */
 			7'd0: begin
+				SrcAddressMem <= 3'd0;
+				MemOp <= 1'd0;
+				WriteMDR <= 1'd0;
+				IRWrite <= 1'd0;
+				RegDst <= 3'd3;
+				RegWrite <= 1'd1;
+				WriteA <= 1'd0;
+				WriteB <= 1'd0;
+				ALUSrcA <= 2'd0;
+				ALUSrcB <= 3'd0;
+				ALUOp <= 3'd0;
+				WriteALUOut <= 1'd0;
+				EPCWrite <= 1'd0;
+				PCSource <= 2'd0;
+				PCWrite <= 1'd0;
+				MemToReg <= 3'd7;
+				nextstate <= Fetch;
+			end
+			/* FETCH */
+			7'd1: begin
 				SrcAddressMem <= 3'd0;
 				MemOp <= 1'd0;
 				WriteMDR <= 1'd1;
 				IRWrite <= 1'd0;
 				RegDst <= 3'd0;
 				RegWrite <= 1'd0;
-				WriteA <= 1'd1;
-				WriteB <= 1'd1;
+				WriteA <= 1'd0;
+				WriteB <= 1'd0;
 				ALUSrcA <= 2'd0;
 				ALUSrcB <= 3'd1;
 				ALUOp <= 3'd1;
@@ -82,7 +90,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				PCSource <= 2'd0;
 				PCWrite <= 1'd1;
 				MemToReg <= 3'd0;
-				state <= 7'd91; /* WritingIR */
+				nextstate <= 7'd91;
 			end
 			
 			/* WAIT */
@@ -101,13 +109,13 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				WriteALUOut <= 1'd0; /* CHECAR SE PRECISA ESCREVER */
 				EPCWrite <= 1'd0;
 				PCSource <= 2'd0;
-				PCWrite <= 1'd0;
+				PCWrite <= 1'd1;
 				MemToReg <= 3'd0;
-				state <= 7'd1; /* Decode */
+				nextstate <= 7'd92; /* Decode */
 			end
 			
 			/* WRITING IR */
-			7'd1: begin
+			7'd92: begin
 				SrcAddressMem <= 3'd0;
 				MemOp <= 1'd0;
 				WriteMDR <= 1'd0;
@@ -124,7 +132,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				PCSource <= 2'd0;
 				PCWrite <= 1'd0;
 				MemToReg <= 3'd0;
-				state <= 7'd2; /* Decode */
+				nextstate <= 7'd2; /* Decode */
 			end
 			
 			/* DECODE */
@@ -132,58 +140,24 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				SrcAddressMem <= 3'd0;
 				MemOp <= 1'd0;
 				WriteMDR <= 1'd0;
-				IRWrite <= 1'd1;
+				IRWrite <= 1'd0;
 				RegDst <= 3'd0;
 				RegWrite <= 1'd0;
-				WriteA <= 1'd0;
-				WriteB <= 1'd0;
+				WriteA <= 1'd1;
+				WriteB <= 1'd1;
 				ALUSrcA <= 2'd0;
-				ALUSrcB <= 3'd0;
-				ALUOp <= 3'd0;
-				WriteALUOut <= 1'd0; /* CHECAR SE PRECISA ESCREVER */
+				ALUSrcB <= 3'd3;
+				ALUOp <= 3'd1;
+				WriteALUOut <= 1'd1;
 				EPCWrite <= 1'd0;
 				PCSource <= 2'd0;
 				PCWrite <= 1'd0;
 				MemToReg <= 3'd0;
-				state <= 7'd3;
-				/* if (OpCode == 6'h0) begin
-					case (Func)  
-						6'h20: state <= 7'd3; //Add
-						6'h24: state <= 7'd8; //And
-						6'h22: state <= 7'd9;
-					endcase	
-				end
-				if (OpCode == 6'h8) begin
-					state <= 7'd10;
-				end */
+				nextstate <= 7'd3;
 			end
 			
 			/* ADD */
 			7'd3: begin
-                SrcAddressMem <= 3'd0;
-                MemOp <= 1'd0;
-                WriteMDR <= 1'd0;
-                IRWrite <= 1'd0;
-                RegDst <= 3'd0;
-                RegWrite <= 1'd0;
-                WriteA <= 1'd1;
-                WriteB <= 1'd1;
-                ALUSrcA <= 2'd0; //*
-                ALUSrcB <= 3'd0; //*
-                ALUOp <= 3'd0; //*
-                WriteALUOut <= 1'd0; //*
-                EPCWrite <= 1'd0;
-                PCSource <= 2'd0;
-                PCWrite <= 1'd0;
-                MemToReg <= 3'd0;
-                state <= 7'd31;
-                /* if (Overflow == 0)
-					state <= WriteALURd;
-                else
-					state <= OverflowEXC; */
-            end
-            
-            7'd31: begin
                 SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;
                 WriteMDR <= 1'd0;
@@ -200,12 +174,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
                 MemToReg <= 3'd0;
-                state <= 7'd4;
-                /* if (Overflow == 0)
-					state <= WriteALURd;
-                else
-					state <= OverflowEXC; */
-			end
+                nextstate <= 7'd4;
+            end
             
 			/* WRITE ALU Rd */            
 			7'd4: begin
@@ -225,163 +195,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
                 MemToReg <= 3'd0;
-                state <= Fetch;
+                nextstate <= Fetch;
             end
-            
-			/*OVERFLOWEXC*/          
-			7'd5: begin
-                SrcAddressMem <= 3'd0;
-                MemOp <= 1'd0;
-                WriteMDR <= 1'd0;
-                IRWrite <= 1'd0;
-                RegDst <= 3'd0;
-                RegWrite <= 1'd0;
-                WriteA <= 1'd0;
-                WriteB <= 1'd0;
-                ALUSrcA <= 2'd0;
-                ALUSrcB <= 3'd1;
-                ALUOp <= 3'd2;
-                WriteALUOut <= 1'd1;
-                EPCWrite <= 1'd1;
-                PCSource <= 2'd0;
-                PCWrite <= 1'd0;
-                MemToReg <= 3'd0;
-				state <= 7'd6; // CAUSE
-            end
-            
-			/*CAUSE*/                    
-			7'd6: begin
-                SrcAddressMem <= 3'd3;
-                MemOp <= 1'd0;
-                WriteMDR <= 1'd1;
-                IRWrite <= 1'd0;
-                RegDst <= 3'd0;
-                RegWrite <= 1'd0;
-                WriteA <= 1'd0;
-                WriteB <= 1'd0;
-                ALUSrcA <= 2'd3;
-                ALUSrcB <= 3'd0;
-                ALUOp <= 3'd0;
-                WriteALUOut <= 1'd1;
-                EPCWrite <= 1'd0;
-                PCSource <= 2'd0;
-                PCWrite <= 1'd0;
-                MemToReg <= 3'd0;
-                state <= 7'd7; // WriteCause
-            end
-            
-			/*WriteCause*/          
-			7'd7: begin
-                SrcAddressMem <= 3'd0;
-                MemOp <= 1'd0;
-                WriteMDR <= 1'd0;
-                IRWrite <= 1'd0;
-                RegDst <= 3'd0;
-                RegWrite <= 1'd0;
-                WriteA <= 1'd0;
-                WriteB <= 1'd0;
-                ALUSrcA <= 2'd0; //*
-                ALUSrcB <= 3'd0; //*
-                ALUOp <= 3'd0; 
-                WriteALUOut <= 1'd0; //*
-                EPCWrite <= 1'd0;
-                PCSource <= 2'd1;
-                PCWrite <= 1'd1;
-                MemToReg <= 3'd0;
-                state <= Fetch;
-            end
-            
-            /* And */
-            7'd8: begin
-				SrcAddressMem <= 3'd0;
-                MemOp <= 1'd0;
-                WriteMDR <= 1'd0;
-                IRWrite <= 1'd0;
-                RegDst <= 3'd0;
-                RegWrite <= 1'd0;
-                WriteA <= 1'd0;
-                WriteB <= 1'd0;
-                ALUSrcA <= 2'd1; //*
-                ALUSrcB <= 3'd0; //*
-                ALUOp <= 3'd3; //*
-                WriteALUOut <= 1'd1; //*
-                EPCWrite <= 1'd0;
-                PCSource <= 2'd0;
-                PCWrite <= 1'd0;
-                MemToReg <= 3'd0;
-                state <= WriteALURd; // Write ALU Rd
-			end
-			
-			/* Sub */
-			7'd9: begin	
-				SrcAddressMem <= 3'd0;
-                MemOp <= 1'd0;
-                WriteMDR <= 1'd0;
-                IRWrite <= 1'd0;
-                RegDst <= 3'd0;
-                RegWrite <= 1'd0;
-                WriteA <= 1'd0;
-                WriteB <= 1'd0;
-                ALUSrcA <= 2'd1; //*
-                ALUSrcB <= 3'd0; //*
-                ALUOp <= 3'd2; //*
-                WriteALUOut <= 1'd1; //*
-                EPCWrite <= 1'd0;
-                PCSource <= 2'd0;
-                PCWrite <= 1'd0;
-                MemToReg <= 3'd0;
-                if (Overflow == 0)
-					state <= WriteALURd;
-                else
-					state <= OverflowEXC;
-			end
-			
-			/* addi */
-			7'd10: begin
-				SrcAddressMem <= 3'd0;
-                MemOp <= 1'd0;
-                WriteMDR <= 1'd0;
-                IRWrite <= 1'd0;
-                RegDst <= 3'd0;
-                RegWrite <= 1'd0;
-                WriteA <= 1'd0;
-                WriteB <= 1'd0;
-                ALUSrcA <= 2'd1; //*
-                ALUSrcB <= 3'd2; //*
-                ALUOp <= 3'd1; //*
-                WriteALUOut <= 1'd1; //*
-                EPCWrite <= 1'd0;
-                PCSource <= 2'd0;
-                PCWrite <= 1'd0;
-                MemToReg <= 3'd0;
-                if (Overflow == 0)
-					state <= WriteAddiRd;
-                else
-					state <= OverflowEXC;
-			end
-			
-			/* WriteAddiRd */
-			7'd11: begin
-				SrcAddressMem <= 3'd0;
-                MemOp <= 1'd0;
-                WriteMDR <= 1'd0;
-                IRWrite <= 1'd0;
-                RegDst <= 3'd0;
-                RegWrite <= 1'd1;
-                WriteA <= 1'd0;
-                WriteB <= 1'd0;
-                ALUSrcA <= 2'd0;
-                ALUSrcB <= 3'd0;
-                ALUOp <= 3'd0;
-                WriteALUOut <= 1'd0;
-                EPCWrite <= 1'd0;
-                PCSource <= 2'd0;
-                PCWrite <= 1'd0;
-                MemToReg <= 3'd0;
-                state <= Fetch;
-			end
 		endcase
-		
 	end
-	
 endmodule

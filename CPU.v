@@ -1,10 +1,9 @@
 module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MDRout,
 			output reg [31:0] OutA, output reg [31:0] OutB, output reg [31:0] ALUResult,
-			output reg [31:0] EPCout);
+			output reg [31:0] EPCout, output reg [31:0] ALUOutSaida);
 
 	// Sinais de controle
 	wire PCWrite;
-	wire PCLoad;
 	wire [2:0] SrcAddressMem;
 	wire MemOp;
 	wire WriteMDR;
@@ -23,8 +22,8 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	
 	// Fios do PC
 	wire [31:0] Compilar = 32'd0; /* Resolver isso depois (inserido para completar os mux) */
-	wire [31:0] PCin;
 	// output reg [31:0] PCOut;
+	wire [31:0] PCin;
 	
 	// Fios da Memória
 	wire [31:0] Address;
@@ -65,7 +64,6 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire [31:0] OutSrcA;
 	wire [31:0] OutSrcB;
 	// output reg [31:0] ALUResult;
-	wire [31:0] ALUOutSaida;
 	wire Overflow;
 	wire Neg;
 	wire Zero;
@@ -81,7 +79,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	// output reg [31:0] EPCout;
 	
 	// Registradores
-	Registrador PC(clk, reset, PCLoad, PCin, PCOut);
+	Registrador PC(clk, reset, PCWrite, PCin, PCOut);
 	Registrador MDR(clk, reset, WriteMDR, MemData, MDRout);
 	Registrador A(clk, reset, WriteA, ReadDataA, OutA);
 	Registrador B(clk, reset, WriteB, ReadDataB, OutB);
