@@ -28,7 +28,6 @@ module CPU(input clk, input reset);
 	wire [31:0] Address;
 	wire [31:0] MemData;
 	wire [31:0] MDRout;
-	wire [7:0] ByteEPC = {24'd0, MDRout[31:24]}; // CHECAR COMO FAZER ISSO
 	
 	// IR (registrador de instruções)
 	wire [15:0] inst15_0;
@@ -37,7 +36,7 @@ module CPU(input clk, input reset);
 	wire [4:0] rs;
 	wire [25:0] endJump = {rs, rt, inst15_0};
 	wire [27:0] ShiftJump;
-	ShiftLeft2(endJump, ShiftJump); 
+	ShiftLeftJump SLjump(endJump, ShiftJump); // shift left do jump
 	wire [31:0] jump = {PCOut[31:28], ShiftJump};
 	
 	// Unidade de Controle
@@ -51,16 +50,16 @@ module CPU(input clk, input reset);
 	wire [31:0] WriteData;
 	wire [31:0] ReadDataA;
 	wire [31:0] ReadDataB;
-	wire [31:0] LT32;
-	ExtendLT(LT, LT32);
+	wire [31:0] LTExt;
+	SignExtLT SElt(LT, LTExt); // sign extend do sinal LT
 	
 	// ULA
 	wire [31:0] OutA;
 	wire [31:0] OutB;
 	wire [31:0] signBranch;
-	SignExtd16a32(inst15_0, signBranch);
+	SignExtImmediate SEimdt(inst15_0, signBranch); // sign extend do imediato
 	wire [31:0] branch;
-	ShiftLeft2(signBranch, branch); 
+	ShiftLeftBranch SLbranch(signBranch, branch); // end do branch
 	wire [31:0] OutSrcA;
 	wire [31:0] OutSrcB;
 	wire [31:0] ALUResult;
@@ -72,7 +71,10 @@ module CPU(input clk, input reset);
 	wire GT;
 	wire LT;
 	
-	// EPC
+	// EXC
+	wire [7:0] ByteEXC = MemData[7:0];
+	wire [31:0] EndEXC;
+	SignExtEXC SEexc(ByteEXC, EndEXC); // sign extend do end da excecao
 	wire [31:0] EPCin = ALUOutSaida;
 	wire [31:0] EPCout;
 	
@@ -93,10 +95,10 @@ module CPU(input clk, input reset);
 	// Multiplexadores
 	MuxSrcAddressMem SrcAddMem(SrcAddressMem, PCOut, ALUOutSaida, Address);
 	MuxRegDst RegDest(RegDst, rt, rd, rs, WriteReg);
-	MuxALUSrcA SrcA(ALUSrcA, PCOut, OutA, OutB, ByteEPC, OutSrcA); // *
-	MuxALUSrcB SrcB(ALUSrcB, OutB, signBranch, branch, Compilar, Compilar, OutSrcB); // *
-	MuxPCSource PCfonte(PCSource, ALUResult, ALUOutSaida, jump, Compilar, PCin); // *
-	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, Compilar, Compilar, Compilar, Compilar, Compilar, LT32, Compilar, WriteData); // *
+	MuxALUSrcA SrcA(ALUSrcA, PCOut, OutA, OutB, EndEXC, OutSrcA); // *
+	MuxALUSrcB SrcB(ALUSrcB, OutB, signBranch, branch, Compilar, Compilar, OutSrcB); // * (ENTRADAS: B, imediato, branch, unsignext, memdata) 
+	MuxPCSource PCfonte(PCSource, ALUResult, ALUOutSaida, jump, EPCout, PCin); // *
+	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, MemData, Compilar, Compilar, Compilar, Compilar, LTExt, WriteData); // *
 	
 	// Unidade de Controle
 	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddressMem, MemOp, WriteMDR,

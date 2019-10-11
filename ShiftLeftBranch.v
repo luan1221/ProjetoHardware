@@ -1,4 +1,4 @@
-module ShiftLeft2(in, out);
+module ShiftLeftBranch(in, out);
 
 input wire [25:0] in;
 output [27:0] out;

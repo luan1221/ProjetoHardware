@@ -246,7 +246,6 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
             end
             
             /* And */
-            
             7'd8: begin
 				SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;
@@ -268,7 +267,6 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 			end
 			
 			/* Sub */
-			
 			7'd9: begin	
 				SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;
@@ -293,7 +291,6 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 			end
 			
 			/* addi */
-			
 			7'd10: begin
 				SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;
@@ -318,7 +315,6 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 			end
 			
 			/* WriteAddiRd */
-			
 			7'd11: begin
 				SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;

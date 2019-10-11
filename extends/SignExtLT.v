@@ -1,4 +1,4 @@
-module ExtendLT(in, out);
+module SignExtLT(in, out);
 
 input wire in;
 

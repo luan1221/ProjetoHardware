@@ -16,14 +16,14 @@
 #
 # -------------------------------------------------------------------------- #
 #
-# Quartus II 64-Bit
-# Version 9.1 Build 350 03/24/2010 Service Pack 2 SJ Full Version
-# Date created = 08:30:44  September 23, 2019
+# Quartus II
+# Version 9.1 Build 350 03/24/2010 Service Pack 2 SJ Web Edition
+# Date created = 20:16:41  October 10, 2019
 #
 # -------------------------------------------------------------------------- #
 
 QUARTUS_VERSION = "9.1"
-DATE = "08:30:44  September 23, 2019"
+DATE = "20:16:41  October 10, 2019"
 
 # Revisions
 
