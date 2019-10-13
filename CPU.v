@@ -42,7 +42,8 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	
 	// Unidade de Controle
 	wire [5:0] OpCode;
-	wire [5:0] Func = inst15_0[5:0];
+	wire [5:0] Func;
+	assign Func = inst15_0[5:0];
 	
 	// Banco de Registradores
 	wire [31:0] ReadReg1;
@@ -57,10 +58,14 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	// ULA
 	// output reg [31:0] OutA;
 	// output reg [31:0] OutB;
-	wire [31:0] signBranch;
-	SignExtImmediate SEimdt(inst15_0, signBranch); // sign extend do imediato
+	wire [31:0] immediate;
+	//assign immediate = {16'd0, inst15_0};
+	SignExtImmediate SEimdt(inst15_0, immediate); // sign extend do imediato
 	wire [31:0] branch;
-	ShiftLeftBranch SLbranch(signBranch, branch); // end do branch
+	//assign branch = immediate << 2;
+	wire [31:0] uImmediate;
+	unSignExtImmediate USEimdt(inst15_0, uImmediate);
+	ShiftLeftBranch SLbranch(immediate, branch); // end do branch
 	wire [31:0] OutSrcA;
 	wire [31:0] OutSrcB;
 	// output reg [31:0] ALUResult;
@@ -96,7 +101,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	MuxSrcAddressMem SrcAddMem(SrcAddressMem, PCOut, ALUOutSaida, Address);
 	MuxRegDst RegDest(RegDst, rt, rd, rs, WriteReg);
 	MuxALUSrcA SrcA(ALUSrcA, PCOut, OutA, OutB, EndEXC, OutSrcA); // *
-	MuxALUSrcB SrcB(ALUSrcB, OutB, signBranch, branch, Compilar, Compilar, OutSrcB); // * (ENTRADAS: B, imediato, branch, unsignext, memdata) 
+	MuxALUSrcB SrcB(ALUSrcB, OutB, immediate, branch, uImmediate, Compilar, OutSrcB); // * (ENTRADAS: B, imediato, branch, unsignext, memdata) 
 	MuxPCSource PCfonte(PCSource, ALUResult, ALUOutSaida, jump, EPCout, PCin); // *
 	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, MemData, Compilar, Compilar, Compilar, Compilar, LTExt, WriteData); // *
 	
