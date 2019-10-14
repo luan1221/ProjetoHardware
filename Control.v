@@ -42,6 +42,9 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 	parameter typeR = 6'h0;
 	parameter Addi = 6'h8;
 	parameter Addiu = 6'h9;
+	parameter OverflowExc = 7'd200;
+	parameter Cause = 7'd201;
+	parameter WriteCause = 7'd202;
 	
 	/* REGISTRADOR AUXILIAR PARA CONTROLAR OS ESTADOS */
 	reg [6:0] state;
@@ -171,7 +174,10 @@ always @(*) begin
 							6'h22: nextstate <= 7'd4; // sub
 							6'h24: nextstate <= 7'd5; // and
 							6'h8: nextstate <= 7'd7;  // jr
-							6'h2a: nextstate <= 7'd9; // slt
+							6'h2a: nextstate <= 7'd9; // slt (nao ta funfando)
+							6'hd: nextstate <= 7'd10; // break
+							6'h13: nextstate <= 7'd11; // rte
+							6'h5: nextstate <= 7'd12;
 						endcase
 					end
 					Addi: begin
@@ -203,7 +209,10 @@ always @(*) begin
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
                 MemToReg <= 3'd0;
-                nextstate <= WriteAluRd;
+                if (Overflow)
+					nextstate <= OverflowExc;
+                else
+					nextstate <= WriteAluRd;
             end
             
             /* Sub */
@@ -225,7 +234,10 @@ always @(*) begin
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
                 MemToReg <= 3'd0;
-                nextstate <= WriteAluRd;
+                if (Overflow)
+					nextstate <= OverflowExc;
+                else
+					nextstate <= WriteAluRd;
             end
             
             /* And */
@@ -269,7 +281,10 @@ always @(*) begin
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
                 MemToReg <= 3'd0;
-                nextstate <= WriteAddiRd;
+                if (Overflow)
+					nextstate <= OverflowExc;
+                else
+					nextstate <= WriteAddiRd;
             end
             
             /* Jr */
@@ -313,7 +328,10 @@ always @(*) begin
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
                 MemToReg <= 3'd0;
-                nextstate <= WriteAddiRd;
+                if (Overflow)
+					nextstate <= OverflowExc;
+                else
+					nextstate <= WriteAddiRd;
 			end
 			
 			/* Slt */
@@ -336,6 +354,116 @@ always @(*) begin
                 PCWrite <= 1'd0;
                 MemToReg <= 3'd0;
                 nextstate <= WriteSltRd;
+			end
+			
+			/* Rte */
+			
+			7'd11: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0; //*
+                ALUSrcB <= 3'd0; //*
+                ALUOp <= 3'd0; //*
+                WriteALUOut <= 1'd0; //*
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd3;
+                PCWrite <= 1'd1;
+                MemToReg <= 3'd0;
+                nextstate <= Fetch;
+			end
+			
+			/* Xchg 1 */
+			
+			7'd12: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd1; //*
+                ALUSrcB <= 3'd0; //*
+                ALUOp <= 3'd0; //*
+                WriteALUOut <= 1'd1; //*
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                nextstate <= 7'd13;
+			end
+			
+			/* Write A to rt */
+			
+			7'd13: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd1;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0; 
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                nextstate <= 7'd14;
+			end
+			
+			/* Xchg 2 */
+			
+			7'd14: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd2; //*
+                ALUSrcB <= 3'd0; //*
+                ALUOp <= 3'd0; //*
+                WriteALUOut <= 1'd1; //*
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                nextstate <= 7'd15;
+			end
+			
+			/* Write b to rs */
+			
+			7'd15: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd4;
+                RegWrite <= 1'd1;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0; 
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                nextstate <= Fetch;
 			end
 			
 			/* WriteAluRd */ 
@@ -403,6 +531,95 @@ always @(*) begin
                 MemToReg <= 3'd6;
                 nextstate <= Fetch;
 			end
+			
+			/* Break */
+			
+			7'd10: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd1;
+                ALUOp <= 3'd2;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd1;
+                MemToReg <= 3'd0;
+                nextstate <= Fetch;
+			end
+			
+			/* Overflow Exc */
+			OverflowExc: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd1;
+                ALUOp <= 3'd2;
+                WriteALUOut <= 1'd1;
+                EPCWrite <= 1'd1;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                nextstate <= 7'd201;
+			end
+			
+			/* Cause */
+			
+			Cause: begin
+				SrcAddressMem <= 3'd3;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd1;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd3;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd1;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                nextstate <= WriteCause;
+			end
+			
+			/* Writing Cause Pc */
+			
+			WriteCause: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd1;
+                PCWrite <= 1'd1;
+                MemToReg <= 3'd0;
+                nextstate <= Fetch;
+			end
+			
+			
 		
 		endcase
 	end
