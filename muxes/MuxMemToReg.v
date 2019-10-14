@@ -13,6 +13,6 @@ module MuxMemToReg(MemToReg, in_aluOut, in_memoryDataReg, in_hi, in_lo, in_shift
 	output [31:0] out;
 	
 	assign out = MemToReg[2] ? (MemToReg[1] ? (MemToReg[0] ? ResetSP : in_lessThanFlag) : (MemToReg[0] ? in_loadOut : in_shiftRegOut))
-					: (MemToReg[1] ? (MemToReg[0] ? in_lo : in_hi) : (MemToReg[0] ? in_memoryDataReg : in_aluOut));
-					
+					: (MemToReg[1] ? (MemToReg[0] ? in_lo : in_hi) : (MemToReg[0] ? in_memoryDataReg : in_aluOut)); 
+	
 endmodule

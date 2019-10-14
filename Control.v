@@ -42,6 +42,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 	parameter typeR = 6'h0;
 	parameter Addi = 6'h8;
 	parameter Addiu = 6'h9;
+	parameter J = 6'h2;
 	parameter OverflowExc = 7'd200;
 	parameter Cause = 7'd201;
 	parameter WriteCause = 7'd202;
@@ -176,15 +177,18 @@ always @(*) begin
 							6'h8: nextstate <= 7'd7;  // jr
 							6'h2a: nextstate <= 7'd9; // slt (nao ta funfando)
 							6'hd: nextstate <= 7'd10; // break
-							6'h13: nextstate <= 7'd11; // rte
-							6'h5: nextstate <= 7'd12;
+							6'h13: nextstate <= 7'd11;// rte
+							6'h5: nextstate <= 7'd12; // xchg 
 						endcase
 					end
 					Addi: begin
 						nextstate <=  7'd6;
 					end
 					Addiu: begin
-						nextstate  <= 7'd8;
+						nextstate <= 7'd8;
+					end
+					J: begin
+						nextstate <= 7'd16; 
 					end
 				endcase 
 				
@@ -462,6 +466,28 @@ always @(*) begin
                 EPCWrite <= 1'd0;
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                nextstate <= Fetch;
+			end
+			
+			/* Jump */
+			
+			7'd16: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0; 
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd1;
+                PCWrite <= 1'd1;
                 MemToReg <= 3'd0;
                 nextstate <= Fetch;
 			end

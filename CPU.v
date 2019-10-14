@@ -1,6 +1,6 @@
 module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MDRout,
 			output reg [31:0] OutA, output reg [31:0] OutB, output reg [31:0] ALUResult,
-			output reg [31:0] EPCout, output reg [31:0] ALUOutSaida);
+			output reg [31:0] EPCout, output reg [31:0] ALUOutSaida, output reg LT, output reg [31:0] LTExt);
 
 	// Sinais de controle
 	wire PCWrite;
@@ -52,8 +52,9 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire [31:0] WriteData;
 	wire [31:0] ReadDataA;
 	wire [31:0] ReadDataB;
-	wire [31:0] LTExt;
-	SignExtLT SElt(LT, LTExt); // sign extend do sinal LT
+	//wire [31:0] LTExt;
+	wire [31:0] LTaux = LTExt;
+	SignExtLT SElt(LT, LTaux); // sign extend do sinal LT
 	
 	// ULA
 	// output reg [31:0] OutA;
@@ -74,7 +75,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire Zero;
 	wire EQ;
 	wire GT;
-	wire LT;
+	//wire LT;
 	
 	// EXC
 	wire [7:0] ByteEXC = MemData[7:0];
@@ -95,7 +96,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	ula32 ALU(OutSrcA, OutSrcB, ALUOp, ALUResult,Overflow, Neg, Zero, EQ, GT, LT);
 	Banco_reg Bank(clk, reset, RegWrite, rs, rt, WriteReg, WriteData, ReadDataA, ReadDataB);
 	Instr_Reg IR(clk, reset, IRWrite, MemData, OpCode, rs, rt, inst15_0);
-	Memoria Memory(Address, clk, MemOp, Compilar, MemData); // *
+	Memoria Memory(Address, clk, MemOp, outB, MemData); // *
 	
 	// Multiplexadores
 	MuxSrcAddressMem SrcAddMem(SrcAddressMem, PCOut, ALUOutSaida, Address);
