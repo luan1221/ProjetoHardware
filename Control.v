@@ -38,6 +38,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 	parameter Wait = 7'd91;
 	parameter WriteAluRd = 7'd93;
 	parameter WriteAddiRd = 7'd94;
+	parameter WriteSltRd = 7'd95;
 	parameter typeR = 6'h0;
 	parameter Addi = 6'h8;
 	parameter Addiu = 6'h9;
@@ -170,6 +171,7 @@ always @(*) begin
 							6'h22: nextstate <= 7'd4; // sub
 							6'h24: nextstate <= 7'd5; // and
 							6'h8: nextstate <= 7'd7;  // jr
+							6'h2a: nextstate <= 7'd9; // slt
 						endcase
 					end
 					Addi: begin
@@ -313,7 +315,30 @@ always @(*) begin
                 MemToReg <= 3'd0;
                 nextstate <= WriteAddiRd;
 			end
-			/* WRITE ALU Rd */ 
+			
+			/* Slt */
+			
+			7'd9: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd1; //*
+                ALUSrcB <= 3'd0; //*
+                ALUOp <= 3'd7; //*
+                WriteALUOut <= 1'd1; //*
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                nextstate <= WriteSltRd;
+			end
+			
+			/* WriteAluRd */ 
 			           
 			WriteAluRd: begin
                 SrcAddressMem <= 3'd0;
@@ -357,6 +382,28 @@ always @(*) begin
                 nextstate <= Fetch;
             end
             
+            /* WriteSltRd */
+            
+            WriteSltRd: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd1;
+                RegWrite <= 1'd1;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd6;
+                nextstate <= Fetch;
+			end
+		
 		endcase
 	end
 endmodule
