@@ -211,9 +211,6 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 					Ble: begin
 						nextstate <= 7'd50;
 					end
-					/* Blm: begin
-						nextstate <= 7'd50;
-					end */
 					Jal: begin
 						nextstate <= 7'd80;
 					end
@@ -758,13 +755,13 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 if (EQ == 1'd1 && OpCode == 6'h4) begin /* beq */
 					nextstate <= Branch;
 				end
-				if (EQ == 1'd0 && OpCode == 6'h5) begin /* bne */
+				else if (EQ == 1'd0 && OpCode == 6'h5) begin /* bne */
 					nextstate <= Branch;
 				end 
-				if (GT == 1'd0 && OpCode == 6'h6) begin /* ble */
+				else if (GT == 1'd0 && OpCode == 6'h6) begin /* ble */
 					nextstate <= Branch;
 				end 
-				if (GT == 1'd1 && OpCode == 6'h7) begin /* bgt */
+				else if (GT == 1'd1 && OpCode == 6'h7) begin /* bgt */
 					nextstate <= Branch;
 				end
 				else begin /* nao da branch */
@@ -787,7 +784,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 ALUOp <= 3'd0;
                 WriteALUOut <= 1'd0;
                 EPCWrite <= 1'd0;
-                PCSource <= 2'd2;
+                PCSource <= 2'd1;
                 PCWrite <= 1'd1;
                 MemToReg <= 3'd0;
                 nextstate <= Fetch;

@@ -22,13 +22,11 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	
 	// Fios do PC
 	wire [31:0] Compilar = 32'd0; /* Resolver isso depois (inserido para completar os mux) */
-	// output reg [31:0] PCOut;
 	wire [31:0] PCin;
 	
 	// Fios da Memória
 	wire [31:0] Address;
 	wire [31:0] MemData;
-	// output reg [31:0] MDRout;
 	
 	// IR (registrador de instruções)
 	wire [15:0] inst15_0;
@@ -52,24 +50,18 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire [31:0] WriteData;
 	wire [31:0] ReadDataA;
 	wire [31:0] ReadDataB;
-	//wire [31:0] LTExt;
 	wire [31:0] LTaux = LTExt;
 	SignExtLT SElt(LT, LTaux); // sign extend do sinal LT
 	
 	// ULA
-	// output reg [31:0] OutA;
-	// output reg [31:0] OutB;
 	wire [31:0] immediate;
-	//assign immediate = {16'd0, inst15_0};
 	SignExtImmediate SEimdt(inst15_0, immediate); // sign extend do imediato
 	wire [31:0] branch;
-	//assign branch = immediate << 2;
 	wire [31:0] uImmediate;
 	unSignExtImmediate USEimdt(inst15_0, uImmediate);
 	ShiftLeftBranch SLbranch(immediate, branch); // end do branch
 	wire [31:0] OutSrcA;
 	wire [31:0] OutSrcB;
-	// output reg [31:0] ALUResult;
 	wire Overflow;
 	wire Neg;
 	wire Zero;
@@ -82,7 +74,6 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire [31:0] EndEXC;
 	SignExtEXC SEexc(ByteEXC, EndEXC); // sign extend do end da excecao
 	wire [31:0] EPCin = ALUOutSaida;
-	// output reg [31:0] EPCout;
 	
 	// Registradores
 	Registrador PC(clk, reset, PCWrite, PCin, PCOut);
