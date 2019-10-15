@@ -1,16 +1,13 @@
-module MuxDisRegShamt(DisRegS, in_bitShamt10a6, in_bitShamtSignExtd, in_b, in_bSignExtend, in_num16, out);
+module MuxDisRegShamt(DisRegS, in_bitShamt10a6, in_b4_0, out);
 
-	input [2:0] DisRegS;
+	input [1:0] DisRegS;
 	input [4:0] in_bitShamt10a6;
-	input [31:0] in_bitShamtSignExtd;
-	input [31:0] in_b;
-	input [31:0] in_bSignExtend;
-	input [31:0] in_num16;
-
+	input [4:0] in_b4_0;	
+	parameter num16 = 5'd16;
+	
 	output[31:0] out;
 
-	assign out = DisRegS[2] ? (DisRegS[1] ? (DisRegS[0] ? 32'd0 : 32'd0) : (DisRegS[0] ? 32'd0 : in_num16))
-					: (DisRegS[1] ? (DisRegS[0] ? in_bSignExtend : in_b) : (DisRegS[0] ? in_bitShamtSignExtd : in_bitShamt10a6));
+	assign out = DisRegS[1] ? (DisRegS[0] ? 32'd0 : num16) : (DisRegS[0] ? in_b4_0 : in_bitShamt10a6);
 					
 endmodule
 		
