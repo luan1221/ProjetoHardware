@@ -109,7 +109,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				ALUSrcA <= 2'd0;
 				ALUSrcB <= 3'd1;
 				ALUOp <= 3'd1;
-				WriteALUOut <= 1'd1; /* CHECAR SE PRECISA ESCREVER */
+				WriteALUOut <= 1'd0;
 				EPCWrite <= 1'd0;
 				PCSource <= 2'd0;
 				PCWrite <= 1'd1;
@@ -752,21 +752,16 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
                 MemToReg <= 3'd0;
-                if (EQ == 1'd1 && OpCode == 6'h4) begin /* beq */
+                if (EQ == 1'd1 && OpCode == 6'h4) /* beq */
 					nextstate <= Branch;
-				end
-				else if (EQ == 1'd0 && OpCode == 6'h5) begin /* bne */
+				else if (EQ == 1'd0 && OpCode == 6'h5) /* bne */
 					nextstate <= Branch;
-				end 
-				else if (GT == 1'd0 && OpCode == 6'h6) begin /* ble */
+				else if (GT == 1'd0 && OpCode == 6'h6) /* ble */
 					nextstate <= Branch;
-				end 
-				else if (GT == 1'd1 && OpCode == 6'h7) begin /* bgt */
+				else if (GT == 1'd1 && OpCode == 6'h7) /* bgt */
 					nextstate <= Branch;
-				end
-				else begin /* nao da branch */
-					nextstate <= Fetch;
-				end
+				else 
+					nextstate <= Fetch; /* nao da branch */
 			end
 			
 			/* BRANCH */
