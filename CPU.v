@@ -23,6 +23,10 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire [1:0] DisRegEntry;
 	wire [1:0] DisRegShamt;
 	wire [2:0] DisRegOp;
+	wire MultControl;
+	wire DivControl;
+	wire SrcHiLo;
+	wire HiLoWrite;
 	
 	// Fios do PC
 	wire [31:0] Compilar = 32'd0; /* Resolver isso depois (inserido para completar os mux) */
@@ -80,6 +84,12 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire [4:0] bShamt = OutB[4:0];
 	//wire [31:0] ShiftOut; 
 	
+	// Div e Mult
+	wire[31:0] SrcHiOut;
+	wire[31:0] SrcLoOut;
+	wire[31:0] HiOut;
+	wire[31:0] LoOut;
+	
 	// EXC
 	wire [7:0] ByteEXC = MemData[7:0];
 	wire [31:0] EndEXC;
@@ -93,6 +103,8 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	Registrador B(clk, reset, WriteB, ReadDataB, OutB);
 	Registrador ALUOut(clk, reset, WriteALUOut, ALUResult, ALUOutSaida);
 	Registrador EPC(clk, reset, EPCWrite, EPCin, EPCout);
+	Registrador Hi(clk, reset, HiLoWrite, SrcHiOut, HiOut);
+	Registrador Lo(clk, reset, HiLoWrite, SrcLoOut, LoOut);
 	
 	// Componentes
 	ula32 ALU(OutSrcA, OutSrcB, ALUOp, ALUResult,Overflow, Neg, Zero, EQ, GT, LT);
@@ -110,11 +122,13 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, MemData, Compilar, Compilar, ShiftOut, Compilar, LTExt, WriteData); // *
 	MuxDisRegEntry DisRegE(DisRegEntry, OutB, OutA, immediate, outDisRegE);
 	MuxDisRegShamt DisRegS(DisRegShamt, bitsShamt, bShamt, outDisRegS);
-	
+	MuxSrcHi SrcHi(SrcHiLo, Compilar, Compilar, SrcHiOut); // *
+	MuxSrcLo SrcLo(SrcHiLo, Compilar, Compilar, SrciLoOut); // *
 	
 	// Unidade de Controle
 	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddressMem, MemOp, WriteMDR,
 					IRWrite, RegDst, RegWrite, WriteA, WriteB, ALUSrcA, ALUSrcB, ALUOp, WriteALUOut,
-					EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry, DisRegShamt, DisRegOp);
+					EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry, DisRegShamt, DisRegOp, MultControl,
+					DivControl, SrcHiLo, HiLoWrite);
 
 endmodule
