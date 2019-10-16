@@ -86,6 +86,11 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire [4:0] bShamt = OutB[4:0];
 	//wire [31:0] ShiftOut; 
 	
+	
+	//Load e Store
+	wire [31:0] LoadOut;
+	Load LoadBox(clk, reset, LoadOp, OutB, LoadOut);
+	
 	// Div e Mult
 	wire[31:0] SrcHiOut;
 	wire[31:0] SrcLoOut;
@@ -112,7 +117,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	ula32 ALU(OutSrcA, OutSrcB, ALUOp, ALUResult,Overflow, Neg, Zero, EQ, GT, LT);
 	Banco_reg Bank(clk, reset, RegWrite, rs, rt, WriteReg, WriteData, ReadDataA, ReadDataB);
 	Instr_Reg IR(clk, reset, IRWrite, MemData, OpCode, rs, rt, inst15_0);
-	Memoria Memory(Address, clk, MemOp, OutB, MemData); // *
+	Memoria Memory(Address, clk, MemOp, LoadOut, MemData); // *
 	RegDesloc ShiftReg(clk, reset, DisRegOp, outDisRegS, outDisRegE, ShiftOut);
 	
 	// Multiplexadores
