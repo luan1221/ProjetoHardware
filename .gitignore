@@ -41,3 +41,9 @@ incremental_db/
 *.map
 
 *.qpf
+
+*.map.smsg
+
+*.smsg
+
+*.vwf
