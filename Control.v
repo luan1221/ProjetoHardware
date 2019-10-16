@@ -2,7 +2,7 @@
 module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddressMem, MemOp, WriteMDR,
 				IRWrite, RegDst, RegWrite, WriteA, WriteB, ALUSrcA, ALUSrcB, ALUOp, WriteALUOut,
 				EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry, DisRegShamt, DisRegOp, MultControl, 
-				DivControl, SrcHiLo, HiLoWrite);
+				DivControl, SrcHiLo, HiLoWrite, LoadOp, StoreOp);
 	
 	/* SINAIS ENVIADOS PARA UNIDADE DE CONTROLE */		
 	input clk;
@@ -39,8 +39,9 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 	output reg DivControl;
 	output reg SrcHiLo;
 	output reg HiLoWrite;
+	output reg [1:0] LoadOp;
+	output reg [1:0] StoreOp;
 
-	
 	/* PARAMETROS HEXADECIMAIS */
 	parameter typeR = 6'h0;
 	parameter Addi = 6'h8;
@@ -112,6 +113,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -140,6 +143,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -168,6 +173,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -196,6 +203,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -224,6 +233,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -244,6 +255,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 							6'h3: nextstate <= LoadShiftSra; // sra
 							6'h7: nextstate <= LoadShiftSrav; // srav
 							6'h2: nextstate <= LoadShiftSrl; // srl
+							6'h10: nextstate <= 7'd34; // mfhi
+							6'h12: nextstate <= 7'd35; // mflo
 						endcase
 					end
 					Addi: begin
@@ -298,6 +311,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -329,6 +344,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -360,6 +377,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -388,6 +407,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -419,6 +440,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -447,6 +470,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -478,6 +503,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -506,6 +533,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -534,6 +563,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -562,6 +593,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -590,6 +623,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -618,6 +653,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -646,6 +683,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -674,6 +713,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -702,6 +743,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -730,6 +773,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -758,6 +803,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -786,6 +833,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -814,6 +863,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -842,6 +893,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -870,6 +923,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -898,6 +953,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -926,6 +983,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -954,6 +1013,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -982,6 +1043,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1019,6 +1082,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1047,6 +1112,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd1;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1075,6 +1142,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd2;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1103,6 +1172,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd1;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd1;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1131,6 +1202,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd1;
 				DisRegShamt <= 2'd1;
 				DisRegOp <= 3'd2;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1159,6 +1232,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd1;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1188,6 +1263,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd4;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1216,6 +1293,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd1;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd1;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1244,6 +1323,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd1;
 				DisRegShamt <= 2'd1;
 				DisRegOp <= 3'd4;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1272,6 +1353,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd1;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1301,6 +1384,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd3;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1329,6 +1414,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1357,6 +1444,8 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
@@ -1385,6 +1474,68 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
+				MultControl <= 1'd0;
+				DivControl <= 1'd0;
+				SrcHiLo <= 1'd0;
+				HiLoWrite <= 1'd0;
+                nextstate <= Fetch;
+              	end
+            
+            /* Mfhi*/
+            7'd34: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd1;
+                RegWrite <= 1'd1;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd2;
+                DisRegEntry <= 2'd0;
+				DisRegShamt <= 2'd0;
+				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
+				MultControl <= 1'd0;
+				DivControl <= 1'd0;
+				SrcHiLo <= 1'd0;
+				HiLoWrite <= 1'd0;
+                nextstate <= Fetch;
+			end
+			
+			/* Mflo */
+			7'd35: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd1;
+                RegWrite <= 1'd1;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd3;
+                DisRegEntry <= 2'd0;
+				DisRegShamt <= 2'd0;
+				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;

@@ -1,7 +1,7 @@
 module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MDRout,
 			output reg [31:0] OutA, output reg [31:0] OutB, output reg [31:0] ALUResult,
-			output reg [31:0] EPCout, output reg [31:0] ALUOutSaida,
-			output reg EQ, output reg LT, output reg [31:0] LTExt, output reg [31:0] ShiftOut);
+			output reg [31:0] EPCout, output reg [31:0] ALUOutSaida, output reg EQ, 
+			output reg LT, output reg [31:0] LTExt, output reg [31:0] ShiftOut);
 
 	// Sinais de controle
 	wire PCWrite;
@@ -27,6 +27,8 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire DivControl;
 	wire SrcHiLo;
 	wire HiLoWrite;
+	wire [1:0] LoadOp;
+	wire [1:0] StoreOp;
 	
 	// Fios do PC
 	wire [31:0] Compilar = 32'd0; /* Resolver isso depois (inserido para completar os mux) */
@@ -119,7 +121,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	MuxALUSrcA SrcA(ALUSrcA, PCOut, OutA, OutB, EndEXC, OutSrcA); // *
 	MuxALUSrcB SrcB(ALUSrcB, OutB, immediate, branch, uImmediate, MemData, OutSrcB); // * (ENTRADAS: B, imediato, branch, unsignext, memdata) 
 	MuxPCSource PCfonte(PCSource, ALUResult, ALUOutSaida, jump, EPCout, PCin); // *
-	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, MemData, Compilar, Compilar, ShiftOut, Compilar, LTExt, WriteData); // *
+	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, MemData, HiOut, LoOut, ShiftOut, Compilar, LTExt, WriteData); // *
 	MuxDisRegEntry DisRegE(DisRegEntry, OutB, OutA, immediate, outDisRegE);
 	MuxDisRegShamt DisRegS(DisRegShamt, bitsShamt, bShamt, outDisRegS);
 	MuxSrcHi SrcHi(SrcHiLo, Compilar, Compilar, SrcHiOut); // *
@@ -129,6 +131,6 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddressMem, MemOp, WriteMDR,
 					IRWrite, RegDst, RegWrite, WriteA, WriteB, ALUSrcA, ALUSrcB, ALUOp, WriteALUOut,
 					EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry, DisRegShamt, DisRegOp, MultControl,
-					DivControl, SrcHiLo, HiLoWrite);
+					DivControl, SrcHiLo, HiLoWrite, LoadOp, StoreOp);
 
 endmodule
