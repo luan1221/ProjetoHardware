@@ -10,7 +10,7 @@ module MuxRegDst(RegDst, in_rt, in_rd, in_rs, out);
 	
 	output [4:0] out;
 	
-	assign out = RegDst[2] ? (RegDst[1] ? (RegDst[0] ? 5'd0 : 5'd0) : (RegDst[0] ? 5'd0 : RegSP))
-					: (RegDst[1] ? (RegDst[0] ? RegRA : in_rs) : (RegDst[0] ? in_rd : in_rt));
+	assign out = RegDst[2] ? (RegDst[1] ? (RegDst[0] ? 5'd0 : 5'd0) : (RegDst[0] ? 5'd0 : in_rs))
+					: (RegDst[1] ? (RegDst[0] ? RegSP : RegRA) : (RegDst[0] ? in_rd : in_rt));
 
 endmodule
