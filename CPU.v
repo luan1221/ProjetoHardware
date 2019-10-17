@@ -1,7 +1,8 @@
 module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MDRout,
 			output reg [31:0] OutA, output reg [31:0] OutB, output reg [31:0] ALUResult,
 			output reg [31:0] EPCout, output reg [31:0] ALUOutSaida, output reg EQ, 
-			output reg LT, output reg [31:0] LTExt, output reg [31:0] ShiftOut);
+			output reg LT, output reg [31:0] LTExt, output reg [31:0] ShiftOut,
+			output [31:0] StoreOut, output [31:0] LoadOut);
 
 	// Sinais de controle
 	wire PCWrite;
@@ -88,8 +89,10 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	
 	
 	//Load e Store
-	wire [31:0] LoadOut;
-	Load LoadBox(clk, reset, LoadOp, OutB, LoadOut);
+	//wire [31:0] LoadOut;
+	Load LoadBox(LoadOp, MDRout, LoadOut);
+	//wire [31:0] StoreOut;
+	Store StoreBox(StoreOp, OutB, MDRout, StoreOut);
 	
 	// Div e Mult
 	wire[31:0] SrcHiOut;
@@ -122,7 +125,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	ula32 ALU(OutSrcA, OutSrcB, ALUOp, ALUResult, Overflow, Neg, Zero, EQ, GT, LT);
 	Banco_reg Bank(clk, reset, RegWrite, rs, rt, WriteReg, WriteData, ReadDataA, ReadDataB);
 	Instr_Reg IR(clk, reset, IRWrite, MemData, OpCode, rs, rt, inst15_0);
-	Memoria Memory(Address, clk, MemOp, LoadOut, MemData); // *
+	Memoria Memory(Address, clk, MemOp, StoreOut, MemData); // *
 	RegDesloc ShiftReg(clk, reset, DisRegOp, outDisRegS, outDisRegE, ShiftOut);
 	Mult Multiplier(clk, reset, OutA, OutB, MultControl, M_OutHi, M_OutLo);
 	Div Divisor(clk, reset, OutA, OutB, DivControl, D_OutHi, D_OutLo, DivZero);
