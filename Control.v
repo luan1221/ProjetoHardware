@@ -1,5 +1,5 @@
 /* UNIDADE DE CONTROLE PARA ENTREGA PARCIAL (incompleta) */
-module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, SrcAddressMem, MemOp, WriteMDR,
+module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZero, SrcAddressMem, MemOp, WriteMDR,
 				IRWrite, RegDst, RegWrite, WriteA, WriteB, ALUSrcA, ALUSrcB, ALUOp, WriteALUOut,
 				EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry, DisRegShamt, DisRegOp, MultControl, 
 				DivControl, SrcHiLo, HiLoWrite, LoadOp, StoreOp);
@@ -14,6 +14,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, S
 	input Zero;
 	input EQ;
 	input GT;
+	input LT;
 	input DivZero;
 	
 	/* SINAIS ENVIADOS DA UNIDADE DE CONTROLE PARA OS COMPONENTES */
@@ -316,6 +317,9 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, S
 					end
 					Lb: begin
 						nextstate <= 7'd115;
+					end
+					Blm: begin
+						nextstate <= 7'd23;
 					end
 				endcase 
 				
@@ -857,6 +861,36 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, S
                 ALUSrcB <= 3'd1;
                 ALUOp <= 3'd2;
                 WriteALUOut <= 1'd1;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                DisRegEntry <= 2'd0;
+				DisRegShamt <= 2'd0;
+				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
+				MultControl <= 1'd0;
+				DivControl <= 1'd0;
+				SrcHiLo <= 1'd0;
+				HiLoWrite <= 1'd0;
+                nextstate <= Cause;
+			end
+			
+			/*WriteEPC */
+			7'd88: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
                 EPCWrite <= 1'd1;
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
@@ -870,12 +904,42 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, S
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
 				HiLoWrite <= 1'd0;
-                nextstate <= 7'd201;
+                nextstate <= 7'd77;
+			end
+			
+			/* Wait */
+			7'd77: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                DisRegEntry <= 2'd0;
+				DisRegShamt <= 2'd0;
+				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
+				MultControl <= 1'd0;
+				DivControl <= 1'd0;
+				SrcHiLo <= 1'd0;
+				HiLoWrite <= 1'd0;
+                nextstate <= Cause;
 			end
 			
 			/* Cause */
 			Cause: begin
-				SrcAddressMem <= 3'd3;
+				SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;
                 WriteMDR <= 1'd1;
                 IRWrite <= 1'd0;
@@ -886,7 +950,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, S
                 ALUSrcA <= 2'd3;
                 ALUSrcB <= 3'd0;
                 ALUOp <= 3'd0;
-                WriteALUOut <= 1'd1;
+                WriteALUOut <= 1'd0;
                 EPCWrite <= 1'd0;
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
@@ -918,7 +982,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, S
                 ALUOp <= 3'd0;
                 WriteALUOut <= 1'd0;
                 EPCWrite <= 1'd0;
-                PCSource <= 2'd1;
+                PCSource <= 2'd0;
                 PCWrite <= 1'd1;
                 MemToReg <= 3'd0;
                 DisRegEntry <= 2'd0;
@@ -933,7 +997,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, S
                 nextstate <= Fetch;
 			end
 			
-			/* JAL */
+			/* Jal */
 			7'd80: begin
 				SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;
@@ -2153,6 +2217,159 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, S
 				SrcHiLo <= 1'd0;
 				HiLoWrite <= 1'd1;
                 nextstate <= Fetch;
+			end
+			
+			/* Blm init */ // Carrega o valor de Rs em ALUOut
+			7'd23: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd1;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd1;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                DisRegEntry <= 2'd0;
+				DisRegShamt <= 2'd0;
+				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
+				MultControl <= 1'd0;
+				DivControl <= 1'd0;
+				SrcHiLo <= 1'd0;
+				HiLoWrite <= 1'd0;
+                nextstate <= 7'd24;
+			end
+			
+			/* Blm Mem Read */ // Manda o valor de Rs de ALUOut para a Memória
+			7'd24: begin
+				SrcAddressMem <= 3'd1;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                DisRegEntry <= 2'd0;
+				DisRegShamt <= 2'd0;
+				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
+				MultControl <= 1'd0;
+				DivControl <= 1'd0;
+				SrcHiLo <= 1'd0;
+				HiLoWrite <= 1'd0;
+                nextstate <= 7'd25;
+			end
+			
+			/* Blm Wait */ // Espera a memória ler o endereço Rs
+			7'd25: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                DisRegEntry <= 2'd0;
+				DisRegShamt <= 2'd0;
+				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
+				MultControl <= 1'd0;
+				DivControl <= 1'd0;
+				SrcHiLo <= 1'd0;
+				HiLoWrite <= 1'd0;
+                nextstate <= 7'd26;
+			end
+			
+			/* Blm MDR */ // Escreve Mem[Rs] no mdr
+			7'd26: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd1;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd0;
+                ALUSrcB <= 3'd0;
+                ALUOp <= 3'd0;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                DisRegEntry <= 2'd0;
+				DisRegShamt <= 2'd0;
+				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
+				MultControl <= 1'd0;
+				DivControl <= 1'd0;
+				SrcHiLo <= 1'd0;
+				HiLoWrite <= 1'd0;
+                nextstate <= 7'd27;
+			end
+			
+			/* Blm Op */
+			7'd27: begin
+				SrcAddressMem <= 3'd0;
+                MemOp <= 1'd0;
+                WriteMDR <= 1'd0;
+                IRWrite <= 1'd0;
+                RegDst <= 3'd0;
+                RegWrite <= 1'd0;
+                WriteA <= 1'd0;
+                WriteB <= 1'd0;
+                ALUSrcA <= 2'd2;
+                ALUSrcB <= 3'd5;
+                ALUOp <= 3'd7;
+                WriteALUOut <= 1'd0;
+                EPCWrite <= 1'd0;
+                PCSource <= 2'd0;
+                PCWrite <= 1'd0;
+                MemToReg <= 3'd0;
+                DisRegEntry <= 2'd0;
+				DisRegShamt <= 2'd0;
+				DisRegOp <= 3'd0;
+				LoadOp <= 2'd0;
+				StoreOp <= 2'd0;
+				MultControl <= 1'd0;
+				DivControl <= 1'd0;
+				SrcHiLo <= 1'd0;
+				HiLoWrite <= 1'd0;
+				if (GT == 1'b1 && EQ == 1'b0)
+					nextstate <= Branch;
+				else 
+					nextstate <= Fetch;
 			end
 		endcase
 	end

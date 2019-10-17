@@ -2,7 +2,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 			output reg [31:0] OutA, output reg [31:0] OutB, output reg [31:0] ALUResult,
 			output reg [31:0] EPCout, output reg [31:0] ALUOutSaida, output reg EQ, 
 			output reg LT, output reg [31:0] LTExt, output reg [31:0] ShiftOut,
-			output [31:0] StoreOut, output [31:0] LoadOut);
+			output [31:0] StoreOut, output [31:0] LoadOut, output reg GT);
 
 	// Sinais de controle
 	wire PCWrite;
@@ -77,7 +77,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire Neg;
 	wire Zero;
 	// wire EQ;
-	wire GT;
+	//wire GT;
 	//wire LT;
 	
 	// RegDesloc
@@ -143,7 +143,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	MuxSrcLo SrcLo(SrcHiLo, M_OutLo, D_OutLo, SrciLoOut); // *
 	
 	// Unidade de Controle
-	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, SrcAddressMem, MemOp, WriteMDR,
+	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZero, SrcAddressMem, MemOp, WriteMDR,
 					IRWrite, RegDst, RegWrite, WriteA, WriteB, ALUSrcA, ALUSrcB, ALUOp, WriteALUOut,
 					EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry, DisRegShamt, DisRegOp, MultControl,
 					DivControl, SrcHiLo, HiLoWrite, LoadOp, StoreOp);
