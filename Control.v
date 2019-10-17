@@ -136,7 +136,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				ALUSrcA <= 2'd0;
 				ALUSrcB <= 3'd1;
 				ALUOp <= 3'd1;
-				WriteALUOut <= 1'd0;
+				WriteALUOut <= 1'd1;
 				EPCWrite <= 1'd0;
 				PCSource <= 2'd0;
 				PCWrite <= 1'd1;
@@ -681,7 +681,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 ALUOp <= 3'd0;
                 WriteALUOut <= 1'd0;
                 EPCWrite <= 1'd0;
-                PCSource <= 2'd1;
+                PCSource <= 2'd2;
                 PCWrite <= 1'd1;
                 MemToReg <= 3'd0;
                 DisRegEntry <= 2'd0;
@@ -919,11 +919,11 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 ALUSrcA <= 2'd0;
                 ALUSrcB <= 3'd0;
                 ALUOp <= 3'd0;
-                WriteALUOut <= 1'd0;
+                WriteALUOut <= 1'd1;
                 EPCWrite <= 1'd0;
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
-                MemToReg <= 3'd1;
+                MemToReg <= 3'd0;
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
@@ -936,23 +936,23 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
                 nextstate <= 7'd81;
 			end
 			
-			/* Wait Jal 1 */
+			/* Write Ra & PC */
 			7'd81: begin
 				SrcAddressMem <= 3'd0;
 				MemOp <= 1'd0;
 				WriteMDR <= 1'd0;
 				IRWrite <= 1'd0;
-				RegDst <= 3'd0;
-				RegWrite <= 1'd0;
+				RegDst <= 3'd2;
+				RegWrite <= 1'd1;
 				WriteA <= 1'd0;
 				WriteB <= 1'd0;
 				ALUSrcA <= 2'd0;
 				ALUSrcB <= 3'd0;
 				ALUOp <= 3'd0;
-				WriteALUOut <= 1'd0; /* CHECAR SE PRECISA ESCREVER */
+				WriteALUOut <= 1'd0; 
 				EPCWrite <= 1'd0;
-				PCSource <= 2'd0;
-				PCWrite <= 1'd0;
+				PCSource <= 2'd2;
+				PCWrite <= 1'd1;
 				MemToReg <= 3'd0;
 				DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
@@ -963,10 +963,10 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
 				HiLoWrite <= 1'd0;
-				nextstate <= 7'd82; /* Decode */
+				nextstate <= Fetch; 
 			end
 			
-			/* Wait Jal 2 */
+			 /* jump jal  
 			7'd82: begin
 				SrcAddressMem <= 3'd0;
 				MemOp <= 1'd0;
@@ -979,10 +979,10 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				ALUSrcA <= 2'd0;
 				ALUSrcB <= 3'd0;
 				ALUOp <= 3'd0;
-				WriteALUOut <= 1'd0; /* CHECAR SE PRECISA ESCREVER */
+				WriteALUOut <= 1'd0; 
 				EPCWrite <= 1'd0;
-				PCSource <= 2'd0;
-				PCWrite <= 1'd0;
+				PCSource <= 2'd2;
+				PCWrite <= 1'd1;
 				MemToReg <= 3'd0;
 				DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
@@ -993,10 +993,10 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
 				HiLoWrite <= 1'd0;
-				nextstate <= 7'd83; /* Decode */
+				nextstate <= Fetch; 
 			end
 			
-			/* Writing RA */
+			
 			7'd83: begin
 				SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;
@@ -1024,7 +1024,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddress
 				SrcHiLo <= 1'd0;
 				HiLoWrite <= 1'd0;
                 nextstate <= Jump;
-			end
+			end */
 			
 			/* COMP */
 			7'd50: begin
