@@ -94,8 +94,13 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	// Div e Mult
 	wire[31:0] SrcHiOut;
 	wire[31:0] SrcLoOut;
+	wire[31:0] M_OutHi;
+	wire[31:0] M_OutLo;
+	wire[31:0] D_OutHi;
+	wire[31:0] D_OutLo;
 	wire[31:0] HiOut;
 	wire[31:0] LoOut;
+	wire DivZero;
 	
 	// EXC
 	wire [7:0] ByteEXC = MemData[7:0];
@@ -114,11 +119,13 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	Registrador Lo(clk, reset, HiLoWrite, SrcLoOut, LoOut);
 	
 	// Componentes
-	ula32 ALU(OutSrcA, OutSrcB, ALUOp, ALUResult,Overflow, Neg, Zero, EQ, GT, LT);
+	ula32 ALU(OutSrcA, OutSrcB, ALUOp, ALUResult, Overflow, Neg, Zero, EQ, GT, LT);
 	Banco_reg Bank(clk, reset, RegWrite, rs, rt, WriteReg, WriteData, ReadDataA, ReadDataB);
 	Instr_Reg IR(clk, reset, IRWrite, MemData, OpCode, rs, rt, inst15_0);
 	Memoria Memory(Address, clk, MemOp, LoadOut, MemData); // *
 	RegDesloc ShiftReg(clk, reset, DisRegOp, outDisRegS, outDisRegE, ShiftOut);
+	Mult Multiplier(clk, reset, OutA, OutB, MultControl, M_OutHi, M_OutLo);
+	Div Divisor(clk, reset, OutA, OutB, DivControl, D_OutHi, D_OutLo, DivZero);
 	
 	// Multiplexadores
 	MuxSrcAddressMem SrcAddMem(SrcAddressMem, PCOut, ALUOutSaida, Address);
@@ -126,14 +133,14 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	MuxALUSrcA SrcA(ALUSrcA, PCOut, OutA, OutB, EndEXC, OutSrcA); // *
 	MuxALUSrcB SrcB(ALUSrcB, OutB, immediate, branch, uImmediate, MemData, OutSrcB); // * (ENTRADAS: B, imediato, branch, unsignext, memdata) 
 	MuxPCSource PCfonte(PCSource, ALUResult, ALUOutSaida, jump, EPCout, PCin); // *
-	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, MemData, HiOut, LoOut, ShiftOut, Compilar, LTExt, WriteData); // *
+	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, MemData, HiOut, LoOut, ShiftOut, LoadOut, LTExt, WriteData); // *
 	MuxDisRegEntry DisRegE(DisRegEntry, OutB, OutA, immediate, outDisRegE);
 	MuxDisRegShamt DisRegS(DisRegShamt, bitsShamt, bShamt, outDisRegS);
-	MuxSrcHi SrcHi(SrcHiLo, Compilar, Compilar, SrcHiOut); // *
-	MuxSrcLo SrcLo(SrcHiLo, Compilar, Compilar, SrciLoOut); // *
+	MuxSrcHi SrcHi(SrcHiLo, M_OutHi, D_OutHi, SrcHiOut); // *
+	MuxSrcLo SrcLo(SrcHiLo, M_OutLo, D_OutLo, SrciLoOut); // *
 	
 	// Unidade de Controle
-	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, SrcAddressMem, MemOp, WriteMDR,
+	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, EQ, GT, DivZero, SrcAddressMem, MemOp, WriteMDR,
 					IRWrite, RegDst, RegWrite, WriteA, WriteB, ALUSrcA, ALUSrcB, ALUOp, WriteALUOut,
 					EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry, DisRegShamt, DisRegOp, MultControl,
 					DivControl, SrcHiLo, HiLoWrite, LoadOp, StoreOp);
