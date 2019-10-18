@@ -524,17 +524,17 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
                 WriteMDR <= 1'd0;
                 IRWrite <= 1'd0;
                 RegDst <= 3'd1;
-                RegWrite <= 1'd0;
+                RegWrite <= 1'd1;
                 WriteA <= 1'd0;
                 WriteB <= 1'd0;
                 ALUSrcA <= 2'd1; //*
                 ALUSrcB <= 3'd0; //*
                 ALUOp <= 3'd7; //*
-                WriteALUOut <= 1'd1; //*
+                WriteALUOut <= 1'd0; //*
                 EPCWrite <= 1'd0;
                 PCSource <= 2'd0;
                 PCWrite <= 1'd0;
-                MemToReg <= 3'd0;
+                MemToReg <= 3'd6;
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
@@ -544,7 +544,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
 				HiLoWrite <= 1'd0;
-                nextstate <= WriteSltRd;
+                nextstate <= Fetch;
 			end
 			
 			/* Rte */
@@ -787,36 +787,6 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
                 nextstate <= Fetch;
             end
             
-            /* WriteSltRd */
-            WriteSltRd: begin
-				SrcAddressMem <= 3'd0;
-                MemOp <= 1'd0;
-                WriteMDR <= 1'd0;
-                IRWrite <= 1'd0;
-                RegDst <= 3'd1;
-                RegWrite <= 1'd1;
-                WriteA <= 1'd0;
-                WriteB <= 1'd0;
-                ALUSrcA <= 2'd0;
-                ALUSrcB <= 3'd0;
-                ALUOp <= 3'd0;
-                WriteALUOut <= 1'd0;
-                EPCWrite <= 1'd0;
-                PCSource <= 2'd0;
-                PCWrite <= 1'd0;
-                MemToReg <= 3'd6;
-                DisRegEntry <= 2'd0;
-				DisRegShamt <= 2'd0;
-				DisRegOp <= 3'd0;
-				LoadOp <= 2'd0;
-				StoreOp <= 2'd0;
-				MultControl <= 1'd0;
-				DivControl <= 1'd0;
-				SrcHiLo <= 1'd0;
-				HiLoWrite <= 1'd0;
-                nextstate <= Fetch;
-			end
-			
 			/* Break */
 			Break: begin
 				SrcAddressMem <= 3'd0;
