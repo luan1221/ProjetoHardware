@@ -30,6 +30,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire HiLoWrite;
 	wire [1:0] LoadOp;
 	wire [1:0] StoreOp;
+	wire MultEnd;
 	
 	// Fios do PC
 	wire [31:0] Compilar = 32'd0; /* Resolver isso depois (inserido para completar os mux) */
@@ -76,16 +77,12 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire Overflow;
 	wire Neg;
 	wire Zero;
-	// wire EQ;
-	//wire GT;
-	//wire LT;
 	
 	// RegDesloc
 	wire [31:0] outDisRegE;
 	wire [4:0] outDisRegS;
 	wire [4:0] bitsShamt = inst15_0[10:6];
 	wire [4:0] bShamt = OutB[4:0];
-	//wire [31:0] ShiftOut; 
 	
 	
 	//Load e Store
@@ -101,9 +98,9 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire[31:0] M_OutLo;
 	wire[31:0] D_OutHi;
 	wire[31:0] D_OutLo;
-	wire[31:0] HiOut;
-	wire[31:0] LoOut;
 	wire DivZero;
+	wire [31:0] HiOut;
+	wire[31:0] LoOut;
 	
 	// EXC
 	wire [7:0] ByteEXC = MemData[7:0];
@@ -127,11 +124,11 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	Instr_Reg IR(clk, reset, IRWrite, MemData, OpCode, rs, rt, inst15_0);
 	Memoria Memory(Address, clk, MemOp, StoreOut, MemData); // *
 	RegDesloc ShiftReg(clk, reset, DisRegOp, outDisRegS, outDisRegE, ShiftOut);
-	Mult Multiplier(clk, reset, OutA, OutB, MultControl, M_OutHi, M_OutLo);
-	Div Divisor(clk, reset, OutA, OutB, DivControl, D_OutHi, D_OutLo, DivZero);
+	Mult Multiplier(clk, reset, OutA, OutB, MultControl, M_OutHi, M_OutLo, MultEnd);
+	// Div Divisor(clk, reset, OutA, OutB, DivControl, D_OutHi, D_OutLo, DivZero);
 	
 	// Multiplexadores
-	MuxSrcAddressMem SrcAddMem(SrcAddressMem, PCOut, ALUOutSaida, Address);
+	MuxSrcAddressMem SrcAddMem(SrcAddressMem, PCOut, ALUOutSaida, ALUResult, Address);
 	MuxRegDst RegDest(RegDst, rt, rd, rs, WriteReg);
 	MuxALUSrcA SrcA(ALUSrcA, PCOut, OutA, OutB, EndEXC, OutSrcA); // *
 	MuxALUSrcB SrcB(ALUSrcB, OutB, immediate, branch, uImmediate, MemData, OutSrcB); // * (ENTRADAS: B, imediato, branch, unsignext, memdata) 
@@ -140,10 +137,10 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	MuxDisRegEntry DisRegE(DisRegEntry, OutB, OutA, immediate, outDisRegE);
 	MuxDisRegShamt DisRegS(DisRegShamt, bitsShamt, bShamt, outDisRegS);
 	MuxSrcHi SrcHi(SrcHiLo, M_OutHi, D_OutHi, SrcHiOut); // *
-	MuxSrcLo SrcLo(SrcHiLo, M_OutLo, D_OutLo, SrciLoOut); // *
+	MuxSrcLo SrcLo(SrcHiLo, M_OutLo, D_OutLo, SrcLoOut); // *
 	
 	// Unidade de Controle
-	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZero, SrcAddressMem, MemOp, WriteMDR,
+	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZero, MultEnd, SrcAddressMem, MemOp, WriteMDR,
 					IRWrite, RegDst, RegWrite, WriteA, WriteB, ALUSrcA, ALUSrcB, ALUOp, WriteALUOut,
 					EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry, DisRegShamt, DisRegOp, MultControl,
 					DivControl, SrcHiLo, HiLoWrite, LoadOp, StoreOp);
