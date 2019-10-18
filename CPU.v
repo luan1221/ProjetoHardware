@@ -2,7 +2,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 			output reg [31:0] OutA, output reg [31:0] OutB, output reg [31:0] ALUResult,
 			output reg [31:0] EPCout, output reg [31:0] ALUOutSaida, output reg EQ, 
 			output reg LT, output reg [31:0] LTExt, output reg [31:0] ShiftOut,
-			output [31:0] StoreOut, output [31:0] LoadOut, output reg GT);
+			output [31:0] StoreOut, output [31:0] LoadOut, output reg GT, output DivEnd);
 
 	// Sinais de controle
 	wire PCWrite;
@@ -31,6 +31,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	wire [1:0] LoadOp;
 	wire [1:0] StoreOp;
 	wire MultEnd;
+	// wire DivEnd;
 	
 	// Fios do PC
 	wire [31:0] Compilar = 32'd0; /* Resolver isso depois (inserido para completar os mux) */
@@ -125,7 +126,7 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	Memoria Memory(Address, clk, MemOp, StoreOut, MemData); // *
 	RegDesloc ShiftReg(clk, reset, DisRegOp, outDisRegS, outDisRegE, ShiftOut);
 	Mult Multiplier(clk, reset, OutA, OutB, MultControl, M_OutHi, M_OutLo, MultEnd);
-	// Div Divisor(clk, reset, OutA, OutB, DivControl, D_OutHi, D_OutLo, DivZero);
+	Div Divisor(clk, reset, OutA, OutB, DivControl, D_OutHi, D_OutLo, DivZero, DivEnd);
 	
 	// Multiplexadores
 	MuxSrcAddressMem SrcAddMem(SrcAddressMem, PCOut, ALUOutSaida, ALUResult, Address);
@@ -140,9 +141,9 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	MuxSrcLo SrcLo(SrcHiLo, M_OutLo, D_OutLo, SrcLoOut); // *
 	
 	// Unidade de Controle
-	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZero, MultEnd, SrcAddressMem, MemOp, WriteMDR,
-					IRWrite, RegDst, RegWrite, WriteA, WriteB, ALUSrcA, ALUSrcB, ALUOp, WriteALUOut,
-					EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry, DisRegShamt, DisRegOp, MultControl,
-					DivControl, SrcHiLo, HiLoWrite, LoadOp, StoreOp);
+	Control Maquina(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZero, MultEnd, DivEnd,
+					SrcAddressMem, MemOp, WriteMDR, IRWrite, RegDst, RegWrite, WriteA, WriteB, ALUSrcA,
+					ALUSrcB, ALUOp, WriteALUOut, EPCWrite, PCSource, PCWrite, MemToReg, DisRegEntry,
+					DisRegShamt, DisRegOp, MultControl, DivControl, SrcHiLo, HiLoWrite, LoadOp, StoreOp);
 
 endmodule
