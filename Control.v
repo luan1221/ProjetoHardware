@@ -2064,7 +2064,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
 				case (OpCode)
 					Lw: nextstate <= 7'd119;
 					Lh: nextstate <= 7'd122;
-					Lh: nextstate <= 7'd123;
+					Lb: nextstate <= 7'd123;
 				endcase
                 
 			end
@@ -2100,7 +2100,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
 			end
 			
 			/* Load h */
-			7'd119: begin
+			7'd122: begin
 				SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;
                 WriteMDR <= 1'd0;
@@ -2130,7 +2130,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
 			end
 			
 			/* Load b */
-			7'd119: begin
+			7'd123: begin
 				SrcAddressMem <= 3'd0;
                 MemOp <= 1'd0;
                 WriteMDR <= 1'd0;
@@ -2150,7 +2150,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
                 DisRegEntry <= 2'd0;
 				DisRegShamt <= 2'd0;
 				DisRegOp <= 3'd0;
-				LoadOp <= 2'd1;
+				LoadOp <= 2'd2;
 				StoreOp <= 2'd0;
 				MultControl <= 1'd0;
 				DivControl <= 1'd0;
