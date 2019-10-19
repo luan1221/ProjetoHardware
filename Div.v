@@ -27,7 +27,9 @@ module Div(clk, reset, InA, InB, DivControl, Hi, Lo, DivZero, DivEnd);
       inicio = 1'd0;
       negacao = 1'd0;
     end
-    
+    else if (InB == 32'd0 && DivControl) begin
+		DivZero = 1'd1;
+	end
     else if(DivControl) begin
 	  dividendo = InA;
 	  divisor = InB;

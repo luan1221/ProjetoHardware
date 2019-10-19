@@ -279,7 +279,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
 						nextstate <= 7'd8;
 					end
 					J: begin
-						nextstate <= 7'd16; 
+						nextstate <= Jump; 
 					end
 					Beq: begin
 						nextstate <= 7'd50;
@@ -546,10 +546,6 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
 				HiLoWrite <= 1'd0;
-                if (Overflow)
-					nextstate <= OverflowExc;
-                else
-					nextstate <= WriteAddiRd;
 			end
 			
 			/* Slt */
@@ -2357,10 +2353,13 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
 				DivControl <= 1'd0;
 				SrcHiLo <= 1'd0;
 				HiLoWrite <= 1'd0;
-				if (DivEnd == 0)
+				if (DivZero == 1)
+					nextstate <= 7'd98;
+				else if (DivEnd == 0)
 					nextstate <= 7'd96;
-				else
+				else if (DivEnd == 1)
 					nextstate <= 7'd97;
+					
 			end
 			
 			/* Write Div */
@@ -2393,7 +2392,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
 				nextstate <= Fetch;
 			end
 			
-			/* exc div
+			 /* exc div */
 			7'd98: begin
 				SrcAddressMem <= 3'd0;
 				MemOp <= 1'd0;
@@ -2421,7 +2420,7 @@ module Control(clk, reset, OpCode, Func, Overflow, Neg, Zero, LT, EQ, GT, DivZer
 				SrcHiLo <= 1'd0;
 				HiLoWrite <= 1'd0;
 				nextstate <= 7'd88;
-			end */
+			end 
 			
 		endcase
 	end
