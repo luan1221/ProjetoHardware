@@ -132,9 +132,9 @@ module CPU(input clk, input reset, output reg [31:0] PCOut, output reg [31:0] MD
 	MuxSrcAddressMem SrcAddMem(SrcAddressMem, PCOut, ALUOutSaida, ALUResult, Address);
 	MuxRegDst RegDest(RegDst, rt, rd, rs, WriteReg);
 	MuxALUSrcA SrcA(ALUSrcA, PCOut, OutA, OutB, EndEXC, OutSrcA); // *
-	MuxALUSrcB SrcB(ALUSrcB, OutB, immediate, branch, uImmediate, MemData, OutSrcB); // * (ENTRADAS: B, imediato, branch, unsignext, memdata) 
+	MuxALUSrcB SrcB(ALUSrcB, OutB, immediate, branch, uImmediate, MDRout, OutSrcB); // * (ENTRADAS: B, imediato, branch, unsignext, memdata) 
 	MuxPCSource PCfonte(PCSource, ALUResult, ALUOutSaida, jump, EPCout, PCin); // *
-	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, MemData, HiOut, LoOut, ShiftOut, LoadOut, LTExt, WriteData); // *
+	MuxMemToReg DataToReg(MemToReg, ALUOutSaida, MDRout, HiOut, LoOut, ShiftOut, LoadOut, LTExt, WriteData); // *
 	MuxDisRegEntry DisRegE(DisRegEntry, OutB, OutA, immediate, outDisRegE);
 	MuxDisRegShamt DisRegS(DisRegShamt, bitsShamt, bShamt, outDisRegS);
 	MuxSrcHi SrcHi(SrcHiLo, M_OutHi, D_OutHi, SrcHiOut); // *
